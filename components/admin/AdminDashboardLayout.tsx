@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -24,12 +24,18 @@ import {
   Moon, 
   ChevronRight,
   Globe,
-  Sparkles
+  Sparkles,
+  ChevronDown,
+  User,
+  Settings
 } from 'lucide-react';
 import SidebarItem from '../dashboard/SidebarItem';
 import AdminOverview from './AdminOverview';
 import UserManagement from './UserManagement';
 import AvatarAdmin from './AvatarAdmin';
+import AdminCalls from './AdminCalls';
+import AdminModeration from './AdminModeration';
+import AdminTickets from './AdminTickets';
 
 interface AdminDashboardLayoutProps {
   theme: 'light' | 'dark';
@@ -42,11 +48,25 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ theme, togg
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  
+  const profileRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1200);
+    const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, [activeTab]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setIsProfileOpen(false);
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setIsNotifOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const navItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -68,10 +88,23 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ theme, togg
       case 'overview': return <AdminOverview isLoading={isLoading} />;
       case 'users': return <UserManagement isLoading={isLoading} />;
       case 'avatars': return <AvatarAdmin isLoading={isLoading} />;
+      case 'calls': return <AdminCalls isLoading={isLoading} />;
+      case 'moderation': return <AdminModeration isLoading={isLoading} />;
+      case 'support': return <AdminTickets isLoading={isLoading} />;
       default: return (
-        <div className="flex flex-col items-center justify-center h-full text-slate-400 space-y-4">
-          <Settings2 size={48} className="animate-spin-slow opacity-20" />
-          <p className="font-medium">Admin Module: {activeTab.toUpperCase()} is under construction.</p>
+        <div className="flex flex-col items-center justify-center h-full text-slate-400 space-y-6">
+          <div className="p-12 rounded-[3.5rem] bg-indigo-500/5 border border-indigo-500/10 text-center">
+             <div className="w-20 h-20 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Settings2 size={40} className="text-indigo-500 animate-spin-slow" />
+             </div>
+             <h3 className="text-2xl font-display font-bold text-slate-900 dark:text-white uppercase tracking-tight">Module Sync Required</h3>
+             <p className="max-w-xs text-center text-sm font-medium mt-3 leading-relaxed">
+               The <span className="text-indigo-500 font-bold">{activeTab.toUpperCase()}</span> portal is currently finalizing its telemetry connection with the main fleet.
+             </p>
+             <button className="mt-8 px-8 py-3 bg-indigo-600 text-white rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-indigo-700 transition-all">
+                Force Sync Module
+             </button>
+          </div>
         </div>
       );
     }
@@ -83,10 +116,10 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ theme, togg
       <motion.aside 
         initial={false}
         animate={{ width: isSidebarOpen ? 280 : 80 }}
-        className="hidden lg:flex flex-col bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 transition-all duration-300"
+        className="hidden lg:flex flex-col bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 z-50 shadow-sm"
       >
         <div className="p-6 flex items-center justify-between overflow-hidden">
-          <div className="flex items-center space-x-3 shrink-0">
+          <div className="flex items-center space-x-3 shrink-0 cursor-pointer" onClick={() => setActiveTab('overview')}>
             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 rotate-3">
               <Sparkles size={16} className="text-white" />
             </div>
@@ -108,7 +141,7 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ theme, togg
                 setActiveTab(item.id);
                 setIsLoading(true);
               }}
-              className={activeTab === item.id ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : ''}
+              className={activeTab === item.id ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold' : ''}
             />
           ))}
         </nav>
@@ -133,12 +166,12 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ theme, togg
             <button onClick={() => setMobileMenuOpen(true)} className="p-2 lg:hidden rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
               <Menu size={24} />
             </button>
-            <div className="hidden sm:flex items-center max-w-md w-full relative">
-              <Search className="absolute left-3 text-slate-400" size={18} />
+            <div className="hidden sm:flex items-center max-w-md w-full relative group">
+              <Search className="absolute left-3 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
               <input 
                 type="text" 
                 placeholder="Global admin search..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-indigo-500 transition-all text-sm"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-indigo-500 transition-all text-sm font-medium"
               />
             </div>
           </div>
@@ -150,25 +183,93 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ theme, togg
                   <p className="text-sm font-bold text-emerald-500">1,242 Live</p>
                </div>
                <div className="text-right">
-                  <p className="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Platform Health</p>
+                  <p className="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Inference Hub</p>
                   <p className="text-sm font-bold text-indigo-500">99.9% Up</p>
                </div>
             </div>
 
-            <button onClick={toggleTheme} className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <button onClick={toggleTheme} className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
             </button>
-            <button className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 relative">
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full animate-ping"></span>
-            </button>
             
-            <div className="flex items-center space-x-3 cursor-pointer group">
-              <img src="https://i.pravatar.cc/150?u=admin" className="w-10 h-10 rounded-xl object-cover ring-2 ring-indigo-500/10 group-hover:ring-indigo-500/40 transition-all" />
-              <div className="hidden md:block">
-                <p className="text-sm font-bold">Admin Sarah</p>
-                <p className="text-[10px] font-black uppercase text-indigo-500 tracking-tighter">Level 2 Admin</p>
+            <div className="relative" ref={notifRef}>
+              <button 
+                onClick={() => setIsNotifOpen(!isNotifOpen)}
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 relative transition-all"
+              >
+                <Bell size={20} />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></span>
+              </button>
+
+              <AnimatePresence>
+                {isNotifOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 mt-4 w-80 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl py-6 z-[100]"
+                  >
+                    <div className="px-6 pb-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                       <h4 className="text-sm font-bold uppercase tracking-widest">Notifications</h4>
+                       <span className="text-[10px] text-indigo-600 font-bold">3 New</span>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto no-scrollbar">
+                       {[
+                         { msg: 'New Pro user registration', time: '2m ago' },
+                         { msg: 'Server node Asia-East scaled', time: '1h ago' },
+                         { msg: 'Weekly billing report ready', time: '4h ago' },
+                       ].map((n, i) => (
+                         <div key={i} className="px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                            <p className="text-xs font-medium text-slate-800 dark:text-slate-200">{n.msg}</p>
+                            <p className="text-[10px] text-slate-400 mt-1">{n.time}</p>
+                         </div>
+                       ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            
+            <div className="relative" ref={profileRef}>
+              <div 
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="flex items-center space-x-3 cursor-pointer group p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+              >
+                <img src="https://i.pravatar.cc/150?u=admin" className="w-10 h-10 rounded-xl object-cover ring-2 ring-indigo-500/10 group-hover:ring-indigo-500/40 transition-all" />
+                <div className="hidden md:block">
+                  <p className="text-sm font-bold">Admin Sarah</p>
+                  <p className="text-[10px] font-black uppercase text-indigo-500 tracking-tighter">Fleet Command</p>
+                </div>
+                <ChevronDown size={14} className={`text-slate-400 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
               </div>
+
+              <AnimatePresence>
+                {isProfileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 mt-4 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl py-3 z-[100]"
+                  >
+                    <button className="w-full flex items-center space-x-3 px-6 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left">
+                       <User size={16} className="text-slate-400" />
+                       <span className="text-sm font-medium">My Account</span>
+                    </button>
+                    <button className="w-full flex items-center space-x-3 px-6 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left">
+                       <Settings size={16} className="text-slate-400" />
+                       <span className="text-sm font-medium">Dashboard Prefs</span>
+                    </button>
+                    <div className="h-px bg-slate-100 dark:bg-slate-800 my-2 mx-4" />
+                    <button 
+                      onClick={onExitDashboard}
+                      className="w-full flex items-center space-x-3 px-6 py-3 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-500 transition-colors text-left"
+                    >
+                       <LogOut size={16} />
+                       <span className="text-sm font-medium">Sign Out</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </header>
@@ -205,14 +306,14 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ theme, togg
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              className="fixed inset-y-0 left-0 w-[80%] max-w-sm bg-white dark:bg-slate-950 z-[70] lg:hidden p-6 flex flex-col"
+              className="fixed inset-y-0 left-0 w-[80%] max-w-sm bg-white dark:bg-slate-950 z-[70] lg:hidden p-6 flex flex-col shadow-2xl"
             >
               <div className="flex items-center justify-between mb-10">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
                     <Sparkles size={16} className="text-white" />
                   </div>
-                  <span className="text-xl font-bold font-display">Cognitia Admin</span>
+                  <span className="text-xl font-bold font-display uppercase tracking-tight">AdminHub</span>
                 </div>
                 <button onClick={() => setMobileMenuOpen(false)}>
                   <X size={24} />
@@ -230,7 +331,7 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ theme, togg
                       setMobileMenuOpen(false);
                       setIsLoading(true);
                     }}
-                    className={activeTab === item.id ? 'bg-indigo-500/10 text-indigo-600' : ''}
+                    className={activeTab === item.id ? 'bg-indigo-500/10 text-indigo-600 font-bold' : ''}
                   />
                 ))}
               </div>
