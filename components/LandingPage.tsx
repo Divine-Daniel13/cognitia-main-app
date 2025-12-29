@@ -19,9 +19,10 @@ interface LandingPageProps {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
   onEnterDashboard: () => void;
+  onEnterAdmin: () => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ theme, toggleTheme, onEnterDashboard }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ theme, toggleTheme, onEnterDashboard, onEnterAdmin }) => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
@@ -34,6 +35,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ theme, toggleTheme, onEnterDa
       <Navbar theme={theme} toggleTheme={toggleTheme} onEnterDashboard={onEnterDashboard} />
       <main>
         <Hero onStart={onEnterDashboard} />
+        <div className="flex justify-center -mt-10 mb-20">
+           <button 
+             onClick={onEnterAdmin}
+             className="px-6 py-2 rounded-full border border-brand-500/30 text-brand-500 text-xs font-bold uppercase tracking-widest hover:bg-brand-500/10 transition-all"
+           >
+             Admin Access Preview
+           </button>
+        </div>
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
