@@ -20,9 +20,16 @@ interface LandingPageProps {
   toggleTheme: () => void;
   onEnterDashboard: () => void;
   onEnterAdmin: () => void;
+  onEnterSuperAdmin: () => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ theme, toggleTheme, onEnterDashboard, onEnterAdmin }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ 
+  theme, 
+  toggleTheme, 
+  onEnterDashboard, 
+  onEnterAdmin, 
+  onEnterSuperAdmin 
+}) => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
@@ -32,17 +39,36 @@ const LandingPage: React.FC<LandingPageProps> = ({ theme, toggleTheme, onEnterDa
 
   return (
     <>
-      <Navbar theme={theme} toggleTheme={toggleTheme} onEnterDashboard={onEnterDashboard} />
+      <Navbar 
+        theme={theme} 
+        toggleTheme={toggleTheme} 
+        onEnterDashboard={onEnterDashboard} 
+        onEnterAdmin={onEnterAdmin}
+        onEnterSuperAdmin={onEnterSuperAdmin}
+      />
       <main>
         <Hero onStart={onEnterDashboard} />
-        <div className="flex justify-center -mt-10 mb-20">
-           <button 
+        
+        {/* Entrance Portal Buttons with enhanced layering and interactivity */}
+        <div className="relative z-20 flex flex-col sm:flex-row justify-center items-center gap-4 -mt-10 mb-20 px-4">
+           <motion.button 
+             whileHover={{ scale: 1.05, y: -2 }}
+             whileTap={{ scale: 0.95 }}
              onClick={onEnterAdmin}
-             className="px-6 py-2 rounded-full border border-brand-500/30 text-brand-500 text-xs font-bold uppercase tracking-widest hover:bg-brand-500/10 transition-all"
+             className="px-8 py-3 rounded-full border border-indigo-500/30 dark:border-indigo-500/20 bg-white/10 dark:bg-slate-900/50 backdrop-blur-md text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-widest hover:bg-indigo-500/10 transition-all shadow-xl"
            >
-             Admin Access Preview
-           </button>
+             Admin Portal
+           </motion.button>
+           <motion.button 
+             whileHover={{ scale: 1.05, y: -2 }}
+             whileTap={{ scale: 0.95 }}
+             onClick={onEnterSuperAdmin}
+             className="px-8 py-3 rounded-full border border-purple-500/30 dark:border-purple-500/20 bg-white/10 dark:bg-slate-900/50 backdrop-blur-md text-purple-600 dark:text-purple-400 text-xs font-bold uppercase tracking-widest hover:bg-purple-500/10 transition-all shadow-xl"
+           >
+             Super Admin Mission Control
+           </motion.button>
         </div>
+
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

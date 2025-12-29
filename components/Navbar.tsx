@@ -1,25 +1,45 @@
 
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Sun, Moon } from 'lucide-react';
-// Added AnimatePresence to imports from framer-motion
+import React, { useState, useEffect, useRef } from 'react';
+import { Menu, X, Sun, Moon, ChevronDown, Shield, ShieldCheck, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface NavbarProps {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
   onEnterDashboard?: () => void;
+  onEnterAdmin?: () => void;
+  onEnterSuperAdmin?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, onEnterDashboard }) => {
+const Navbar: React.FC<NavbarProps> = ({ 
+  theme, 
+  toggleTheme, 
+  onEnterDashboard, 
+  onEnterAdmin, 
+  onEnterSuperAdmin 
+}) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSignInDropdownOpen, setIsSignInDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsSignInDropdownOpen(false);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const navLinks = [
@@ -34,9 +54,9 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, onEnterDashboard })
     <motion.nav 
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
         isScrolled 
-          ? 'py-3 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800' 
+          ? 'py-3 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 shadow-lg' 
           : 'py-6 bg-transparent'
       }`}
     >
@@ -46,6 +66,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, onEnterDashboard })
           <motion.div 
             whileHover={{ scale: 1.05 }}
             className="flex items-center space-x-2 cursor-pointer"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-600 to-accent-teal flex items-center justify-center shadow-lg shadow-brand-500/20">
               <div className="w-5 h-5 rounded-full border-2 border-white/80 animate-pulse"></div>
@@ -80,9 +101,61 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, onEnterDashboard })
             >
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
             </motion.button>
-            <button className="text-sm font-medium px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-brand-500 transition-colors">
-              Sign In
-            </button>
+            
+            {/* Sign In Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button 
+                onClick={() => setIsSignInDropdownOpen(!isSignInDropdownOpen)}
+                className="flex items-center space-x-1 text-sm font-medium px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-brand-500 transition-colors"
+              >
+                <span>Sign In</span>
+                <ChevronDown size={14} className={`transition-transform duration-300 ${isSignInDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {isSignInDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden py-2"
+                  >
+                    <button 
+                      onClick={() => { onEnterDashboard?.(); setIsSignInDropdownOpen(false); }}
+                      className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
+                    >
+                      <User size={18} className="text-brand-500" />
+                      <div>
+                        <p className="text-sm font-bold">Client Login</p>
+                        <p className="text-[10px] text-slate-500">Access your sessions</p>
+                      </div>
+                    </button>
+                    <button 
+                      onClick={() => { onEnterAdmin?.(); setIsSignInDropdownOpen(false); }}
+                      className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
+                    >
+                      <Shield size={18} className="text-indigo-500" />
+                      <div>
+                        <p className="text-sm font-bold">Admin Portal</p>
+                        <p className="text-[10px] text-slate-500">Manage platform fleet</p>
+                      </div>
+                    </button>
+                    <div className="h-px bg-slate-100 dark:bg-slate-800 mx-2 my-1" />
+                    <button 
+                      onClick={() => { onEnterSuperAdmin?.(); setIsSignInDropdownOpen(false); }}
+                      className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
+                    >
+                      <ShieldCheck size={18} className="text-purple-500" />
+                      <div>
+                        <p className="text-sm font-bold">Super Admin</p>
+                        <p className="text-[10px] text-slate-500">Root Mission Control</p>
+                      </div>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <motion.button 
               onClick={onEnterDashboard}
               whileHover={{ scale: 1.05, boxShadow: "0 20px 25px -5px rgb(14 165 233 / 0.15)" }}
@@ -126,15 +199,25 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, onEnterDashboard })
                 </a>
               ))}
               <div className="pt-4 flex flex-col space-y-3">
-                <button className="w-full py-3 rounded-lg border border-slate-200 dark:border-slate-800 font-semibold">
-                  Sign In
+                <button 
+                  onClick={() => { setIsMobileMenuOpen(false); onEnterDashboard?.(); }}
+                  className="w-full flex items-center justify-between py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-800 font-semibold"
+                >
+                  <span>User Login</span>
+                  <User size={18} />
                 </button>
                 <button 
-                  /* Fixed typo: setMobileMenuOpen to setIsMobileMenuOpen */
-                  onClick={() => { setIsMobileMenuOpen(false); onEnterDashboard?.(); }}
-                  className="w-full py-3 rounded-lg bg-brand-600 text-white font-semibold"
+                  onClick={() => { setIsMobileMenuOpen(false); onEnterAdmin?.(); }}
+                  className="w-full flex items-center justify-between py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-800 font-semibold"
                 >
-                  Get Started
+                  <span>Admin Portal</span>
+                  <Shield size={18} />
+                </button>
+                <button 
+                  onClick={() => { setIsMobileMenuOpen(false); onEnterDashboard?.(); }}
+                  className="w-full py-4 rounded-xl bg-brand-600 text-white font-bold"
+                >
+                  Get Started Free
                 </button>
               </div>
             </div>
