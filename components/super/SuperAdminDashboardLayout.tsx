@@ -2,33 +2,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  LayoutDashboard, 
-  Users, 
-  ShieldCheck, 
-  Activity, 
-  DollarSign, 
-  Globe, 
-  Database, 
-  Settings, 
-  Terminal, 
-  AlertTriangle, 
-  Edit3, 
-  LogOut,
-  Sparkles,
-  Menu,
-  X,
-  Search,
-  Bell,
-  Sun,
-  Moon,
-  Zap,
-  Lock,
-  Cpu,
-  RefreshCw,
-  Code,
-  ChevronDown,
-  User,
-  CreditCard
+  LayoutDashboard, Users, ShieldCheck, Activity, DollarSign, Globe, Database, 
+  Settings, Terminal, Edit3, LogOut, Sparkles, Menu, X, Search, Bell, Sun, 
+  Moon, Zap, Lock, Cpu, RefreshCw, Code, ChevronDown, User, CreditCard, 
+  ShieldAlert, Layers, Share2, TerminalSquare
 } from 'lucide-react';
 import SidebarItem from '../dashboard/SidebarItem';
 import SuperOverview from './SuperOverview';
@@ -37,6 +14,9 @@ import SystemConfig from './SystemConfig';
 import SuperUserRegistry from './SuperUserRegistry';
 import SuperAdminFleet from './SuperAdminFleet';
 import SuperSessionControl from './SuperSessionControl';
+import SuperRevenue from './SuperRevenue';
+import SuperAvatarControl from './SuperAvatarControl';
+import SuperAnalytics from './SuperAnalytics';
 
 interface SuperAdminDashboardLayoutProps {
   theme: 'light' | 'dark';
@@ -56,7 +36,7 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
   const notifRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800);
+    const timer = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(timer);
   }, [activeTab]);
 
@@ -111,31 +91,73 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
       case 'users': return <SuperUserRegistry isLoading={isLoading} />;
       case 'admins': return <SuperAdminFleet isLoading={isLoading} />;
       case 'sessions': return <SuperSessionControl isLoading={isLoading} />;
+      case 'revenue': return <SuperRevenue isLoading={isLoading} />;
+      case 'analytics': return <SuperAnalytics isLoading={isLoading} />;
+      case 'avatars': return <SuperAvatarControl isLoading={isLoading} />;
       case 'landing': return <LandingEditor isLoading={isLoading} />;
       case 'config': return <SystemConfig isLoading={isLoading} />;
-      default: return (
-        <div className="flex flex-col items-center justify-center h-full text-slate-400 space-y-6">
-          <div className="p-12 rounded-[4rem] bg-purple-500/5 border border-purple-500/20 text-center">
-             <div className="w-24 h-24 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Code size={48} className="text-purple-500 animate-pulse" />
+      // Fallback for system modules with heavy dummy data
+      case 'pages':
+      case 'security':
+      case 'audit':
+      case 'testing':
+        return (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+             <div className="flex justify-between items-center">
+                <div>
+                   <h1 className="text-3xl font-display font-black uppercase tracking-tighter">{activeTab.replace(/([A-Z])/g, ' $1').trim()} Control</h1>
+                   <p className="text-slate-500 font-medium">Root level terminal for {activeTab} operations.</p>
+                </div>
+                <div className="flex space-x-2">
+                   <button className="p-3 rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20"><TerminalSquare size={20}/></button>
+                   <button className="p-3 rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20"><Share2 size={20}/></button>
+                </div>
              </div>
-             <h3 className="text-3xl font-display font-black text-slate-900 dark:text-white uppercase tracking-tighter">Root Module Loaded</h3>
-             <p className="max-w-md text-center text-sm font-medium mt-4 leading-relaxed">
-               The <span className="text-purple-500 font-bold">{activeTab.toUpperCase()}</span> control system is live but requires specific data binding for this cluster. 
-               <br/>Current Status: <span className="text-emerald-500 font-bold">Awaiting Input</span>
-             </p>
-             <button className="mt-8 px-8 py-3 bg-purple-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-purple-700 transition-all">
-                Initialize Data Sink
-             </button>
+             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="p-10 bg-white dark:bg-slate-950 border border-slate-200 dark:border-purple-500/10 rounded-[3rem] shadow-sm">
+                   <div className="flex items-center space-x-4 mb-10">
+                      <div className="w-12 h-12 rounded-2xl bg-purple-600 flex items-center justify-center text-white shadow-lg"><Layers size={24}/></div>
+                      <h4 className="text-xl font-bold uppercase tracking-tight">Active State Sync</h4>
+                   </div>
+                   <div className="space-y-6">
+                      {[1,2,3,4].map(i => (
+                        <div key={i} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800">
+                           <div className="flex items-center space-x-3">
+                              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              <span className="text-sm font-bold">NODE_STREAM_0{i}</span>
+                           </div>
+                           <span className="text-[10px] font-black text-slate-400">ENCRYPTED_SSL</span>
+                        </div>
+                      ))}
+                   </div>
+                </div>
+                <div className="p-10 bg-slate-900 rounded-[3rem] text-white overflow-hidden relative group">
+                   <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 blur-3xl" />
+                   <h4 className="text-xl font-display font-black uppercase tracking-tighter mb-8">Terminal Output</h4>
+                   <div className="font-mono text-xs text-purple-300/80 space-y-2">
+                      <p className="flex items-center space-x-2"><span className="text-emerald-500">>>></span><span>Initializing system v3.4.1...</span></p>
+                      <p className="flex items-center space-x-2"><span className="text-emerald-500">>>></span><span>Root authorization level 7 detected.</span></p>
+                      <p className="flex items-center space-x-2"><span className="text-emerald-500">>>></span><span>Syncing global cluster shards...</span></p>
+                      <p className="flex items-center space-x-2"><span className="text-emerald-500">>>></span><span>Accessing {activeTab} reservoir...</span></p>
+                      <div className="pt-4 flex space-x-4">
+                         <div className="h-1 w-12 bg-purple-500/40 rounded-full overflow-hidden">
+                            <motion.div animate={{x: [-48, 48]}} transition={{repeat: Infinity, duration: 1.5}} className="h-full w-full bg-purple-400" />
+                         </div>
+                         <div className="h-1 w-24 bg-purple-500/40 rounded-full overflow-hidden">
+                            <motion.div animate={{x: [-96, 96]}} transition={{repeat: Infinity, duration: 2.5}} className="h-full w-full bg-purple-400" />
+                         </div>
+                      </div>
+                   </div>
+                </div>
+             </div>
           </div>
-        </div>
-      );
+        );
+      default: return null;
     }
   };
 
   return (
     <div className="flex h-screen bg-[#FDFCFE] dark:bg-[#020617] overflow-hidden">
-      {/* SuperSidebar */}
       <motion.aside 
         initial={false}
         animate={{ width: isSidebarOpen ? 300 : 80 }}
@@ -192,14 +214,12 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
         </div>
       </motion.aside>
 
-      {/* Main Mission Control */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         <div className="absolute inset-0 pointer-events-none opacity-20 -z-10">
            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple-500/10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2" />
            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 blur-[100px] rounded-full -translate-x-1/2 translate-y-1/2" />
         </div>
 
-        {/* SuperTopbar */}
         <header className="h-24 flex items-center justify-between px-4 lg:px-10 bg-white/60 dark:bg-slate-950/60 backdrop-blur-3xl border-b border-purple-500/10 z-50">
           <div className="flex items-center space-x-6 flex-1">
             <button onClick={() => setMobileMenuOpen(true)} className="p-3 lg:hidden rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-800">
@@ -207,7 +227,7 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
             </button>
             <div className="hidden md:flex items-center space-x-3 px-5 py-3 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-purple-500/20 shadow-sm">
                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-               <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Global Cluster: Active</span>
+               <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Cluster: Stable</span>
             </div>
             <div className="hidden lg:flex items-center max-w-lg w-full relative group">
               <Search className="absolute left-4 text-slate-400 group-focus-within:text-purple-500 transition-colors" size={20} />
@@ -299,10 +319,6 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
                           <span className="text-sm font-bold">Root Profile</span>
                        </button>
                        <button className="w-full flex items-center space-x-4 px-6 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors">
-                          <CreditCard size={18} className="text-slate-400" />
-                          <span className="text-sm font-bold">Billing Core</span>
-                       </button>
-                       <button className="w-full flex items-center space-x-4 px-6 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors">
                           <Settings size={18} className="text-slate-400" />
                           <span className="text-sm font-bold">Master Settings</span>
                        </button>
@@ -322,7 +338,6 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
           </div>
         </header>
 
-        {/* View Port */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-10 custom-scrollbar relative">
           <AnimatePresence mode="wait">
             <motion.div
@@ -339,52 +354,24 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
         </main>
       </div>
 
-      {/* SuperMobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMobileMenuOpen(false)}
-              className="fixed inset-0 bg-slate-950/80 backdrop-blur-lg z-[100] lg:hidden"
-            />
-            <motion.div 
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              className="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white dark:bg-slate-950 z-[110] lg:hidden p-8 flex flex-col shadow-2xl"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileMenuOpen(false)} className="fixed inset-0 bg-slate-950/80 backdrop-blur-lg z-[100] lg:hidden" />
+            <motion.div initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} className="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white dark:bg-slate-950 z-[110] lg:hidden p-8 flex flex-col shadow-2xl" >
               <div className="flex items-center justify-between mb-12">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-2xl bg-purple-600 flex items-center justify-center shadow-lg">
-                    <ShieldCheck size={20} className="text-white" />
-                  </div>
-                  <span className="text-2xl font-black font-display tracking-tighter">ROOT ACCESS</span>
+                  <div className="w-10 h-10 rounded-2xl bg-purple-600 flex items-center justify-center shadow-lg"><ShieldCheck size={20} className="text-white" /></div>
+                  <span className="text-2xl font-black font-display tracking-tighter uppercase">Root</span>
                 </div>
-                <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900">
-                  <X size={24} />
-                </button>
+                <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900"><X size={24} /></button>
               </div>
-              
               <div className="flex-1 space-y-6 overflow-y-auto no-scrollbar">
                 {navGroups.map((group) => (
                   <div key={group.group} className="space-y-2">
                     <p className="px-4 text-[10px] font-black uppercase text-slate-400 tracking-widest mb-3">{group.group}</p>
                     {group.items.map((item) => (
-                      <SidebarItem 
-                        key={item.id}
-                        {...item}
-                        isOpen={true}
-                        isActive={activeTab === item.id}
-                        onClick={() => {
-                          setActiveTab(item.id);
-                          setMobileMenuOpen(false);
-                          setIsLoading(true);
-                        }}
-                        className={activeTab === item.id ? 'bg-purple-500/10 text-purple-600' : ''}
-                      />
+                      <SidebarItem key={item.id} {...item} isOpen={true} isActive={activeTab === item.id} onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false); setIsLoading(true); }} className={activeTab === item.id ? 'bg-purple-500/10 text-purple-600' : ''} />
                     ))}
                   </div>
                 ))}

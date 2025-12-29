@@ -1,10 +1,12 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Users, ShieldCheck, Video, DollarSign, Activity, Cpu, Server, Database, Globe, TrendingUp, ArrowUpRight, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Users, ShieldCheck, Video, DollarSign, Activity, Cpu, Server, Database, Globe, TrendingUp, ArrowUpRight, Zap, AlertTriangle, Terminal, Code2 } from 'lucide-react';
 import { Skeleton } from '../Skeleton';
 
 const SuperOverview: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
+  const [subView, setSubView] = useState<'default' | 'telemetry' | 'incidents'>('default');
+
   const kpis = [
     { label: 'Total Global Users', value: '428,291', change: '+24.5%', icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
     { label: 'Network Admins', value: '842', change: '+2.1%', icon: ShieldCheck, color: 'text-purple-500', bg: 'bg-purple-500/10' },
@@ -34,142 +36,122 @@ const SuperOverview: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
   }
 
   return (
-    <div className="space-y-10 pb-12">
-      {/* Portals and Identity */}
+    <div className="space-y-10 pb-12 overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="text-4xl font-display font-black tracking-tighter uppercase">Platform Command Center</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">Real-time telemetry and global authority nexus.</p>
         </div>
         <div className="flex items-center space-x-3 bg-white dark:bg-slate-900 p-2 rounded-3xl shadow-xl border border-slate-200 dark:border-purple-500/20">
-           <div className="px-5 py-2.5 bg-purple-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-purple-500/30">Live Map</div>
-           <button className="px-5 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">Telemetry</button>
-           <button className="px-5 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">Incidents</button>
-        </div>
-      </div>
-
-      {/* Root KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {kpis.map((kpi, idx) => (
-          <motion.div 
-            key={idx}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1, type: 'spring', stiffness: 100 }}
-            whileHover={{ y: -8, scale: 1.02 }}
-            className="p-8 bg-white dark:bg-slate-950 border border-slate-200 dark:border-purple-500/10 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 relative overflow-hidden group"
-          >
-             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-purple-500/5 to-transparent rounded-bl-[4rem]" />
-             <div className="flex justify-between items-start mb-10">
-                <div className={`w-16 h-16 rounded-[1.5rem] ${kpi.bg} ${kpi.color} flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6`}>
-                   <kpi.icon size={32} />
-                </div>
-                <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-500 rounded-xl text-xs font-black">
-                   <TrendingUp size={16} />
-                   <span>{kpi.change}</span>
-                </div>
-             </div>
-             <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{kpi.label}</p>
-             <h3 className="text-4xl font-display font-black tracking-tighter">{kpi.value}</h3>
-          </motion.div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Global Traffic & Node Analytics */}
-        <div className="lg:col-span-2 p-10 bg-white dark:bg-slate-950 border border-slate-200 dark:border-purple-500/10 rounded-[3.5rem] shadow-sm flex flex-col">
-           <div className="flex items-center justify-between mb-16">
-              <div>
-                <h4 className="text-3xl font-display font-black uppercase tracking-tighter">Global Session Density</h4>
-                <p className="text-sm text-slate-400 font-bold mt-1">Cross-regional inference distribution (ms)</p>
-              </div>
-              <div className="flex space-x-2">
-                 {[1, 2, 3].map(i => <div key={i} className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800" />)}
-              </div>
-           </div>
-           
-           <div className="flex-1 flex items-end justify-between gap-6 px-4">
-              {[80, 40, 100, 60, 45, 90, 70, 85, 30, 95, 60, 75, 40, 80, 55, 100].map((h, i) => (
-                <div key={i} className="flex-1 flex flex-col gap-2 group items-center">
-                   <div className="flex-1 w-full bg-slate-50 dark:bg-slate-900/50 rounded-2xl relative overflow-hidden">
-                      <motion.div 
-                        initial={{ height: 0 }}
-                        animate={{ height: `${h}%` }}
-                        transition={{ duration: 1.5, delay: i * 0.05, ease: "circOut" }}
-                        className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-purple-600/40 to-purple-400/20"
-                      />
-                      <motion.div 
-                        initial={{ height: 0 }}
-                        animate={{ height: `${h * 0.6}%` }}
-                        transition={{ duration: 1.5, delay: i * 0.05 + 0.3, ease: "circOut" }}
-                        className="absolute bottom-0 left-0 right-0 bg-purple-600 rounded-xl shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all group-hover:bg-purple-400"
-                      />
-                      {h > 80 && (
-                        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping" />
-                      )}
-                   </div>
-                   <span className="text-[9px] font-black text-slate-400 uppercase">{i + 1}</span>
-                </div>
-              ))}
-           </div>
-           
-           <div className="mt-12 flex flex-wrap gap-4">
-              {['US-East-1', 'EU-Central-1', 'Asia-NE-1', 'SA-East-1'].map(region => (
-                <div key={region} className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-[10px] font-black uppercase text-slate-500 flex items-center space-x-2">
-                   <Globe size={12} className="text-purple-500" />
-                   <span>{region}</span>
-                </div>
-              ))}
-           </div>
-        </div>
-
-        {/* System Health Nexus */}
-        <div className="p-10 bg-white dark:bg-slate-950 border border-slate-200 dark:border-purple-500/10 rounded-[3.5rem] shadow-sm flex flex-col">
-           <div className="flex items-center justify-between mb-10">
-              <h4 className="text-2xl font-display font-black uppercase tracking-tighter">System Health</h4>
-              <Zap size={24} className="text-purple-500 animate-bounce" />
-           </div>
-           
-           <div className="space-y-6 flex-1 overflow-y-auto no-scrollbar">
-              {systems.map((sys, i) => (
-                <motion.div 
-                  key={sys.label}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-purple-500/5 hover:border-purple-500/30 transition-all group"
-                >
-                   <div className="flex items-start justify-between mb-4">
-                      <div className={`p-3 rounded-2xl ${sys.health > 95 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'} transition-transform group-hover:scale-110`}>
-                         <sys.icon size={20} />
-                      </div>
-                      <div className="text-right">
-                         <p className="text-[10px] font-black uppercase text-slate-400">Response</p>
-                         <p className="text-sm font-black">{sys.latency}</p>
-                      </div>
-                   </div>
-                   <h5 className="text-sm font-black uppercase tracking-tight mb-2">{sys.label}</h5>
-                   <div className="flex items-center justify-between mb-1">
-                      <span className={`text-[10px] font-bold uppercase ${sys.health > 95 ? 'text-emerald-500' : 'text-rose-500'}`}>{sys.status}</span>
-                      <span className="text-[10px] font-black">{sys.health}%</span>
-                   </div>
-                   <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${sys.health}%` }}
-                        transition={{ duration: 1, delay: i * 0.1 }}
-                        className={`h-full ${sys.health > 95 ? 'bg-emerald-500' : 'bg-rose-500'} rounded-full`}
-                      />
-                   </div>
-                </motion.div>
-              ))}
-           </div>
-           
-           <button className="w-full py-5 mt-10 rounded-3xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black uppercase text-xs tracking-widest hover:opacity-90 transition-all shadow-2xl">
-              Initiate System Purge
+           <button 
+             onClick={() => setSubView('default')}
+             className={`px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${subView === 'default' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+           >
+             Live Map
+           </button>
+           <button 
+             onClick={() => setSubView('telemetry')}
+             className={`px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${subView === 'telemetry' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+           >
+             Telemetry
+           </button>
+           <button 
+             onClick={() => setSubView('incidents')}
+             className={`px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${subView === 'incidents' ? 'bg-rose-600 text-white shadow-lg shadow-rose-500/30' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+           >
+             Incidents
            </button>
         </div>
       </div>
+
+      <AnimatePresence mode="wait">
+        {subView === 'default' && (
+          <motion.div 
+            key="default" initial={{opacity: 0, x: -20}} animate={{opacity: 1, x: 0}} exit={{opacity: 0, x: 20}} className="space-y-10"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {kpis.map((kpi, idx) => (
+                <motion.div key={idx} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} whileHover={{ y: -8, scale: 1.02 }} className="p-8 bg-white dark:bg-slate-950 border border-slate-200 dark:border-purple-500/10 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 relative overflow-hidden group">
+                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-purple-500/5 to-transparent rounded-bl-[4rem]" />
+                   <div className="flex justify-between items-start mb-10"><div className={`w-16 h-16 rounded-[1.5rem] ${kpi.bg} ${kpi.color} flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6`}><kpi.icon size={32} /></div><div className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-500 rounded-xl text-xs font-black"><TrendingUp size={16} /><span>{kpi.change}</span></div></div>
+                   <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{kpi.label}</p><h3 className="text-4xl font-display font-black tracking-tighter">{kpi.value}</h3>
+                </motion.div>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 p-10 bg-white dark:bg-slate-950 border border-slate-200 dark:border-purple-500/10 rounded-[3.5rem] shadow-sm flex flex-col">
+                 <div className="flex items-center justify-between mb-16"><div><h4 className="text-3xl font-display font-black uppercase tracking-tighter">Global Session Density</h4><p className="text-sm text-slate-400 font-bold mt-1">Cross-regional distribution</p></div></div>
+                 <div className="flex-1 flex items-end justify-between gap-6 px-4">
+                    {[80, 40, 100, 60, 45, 90, 70, 85, 30, 95, 60, 75, 40, 80, 55, 100].map((h, i) => (
+                      <div key={i} className="flex-1 flex flex-col gap-2 group items-center"><div className="flex-1 w-full bg-slate-50 dark:bg-slate-900/50 rounded-2xl relative overflow-hidden"><motion.div initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ duration: 1.5, delay: i * 0.05 }} className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-purple-600/40 to-purple-400/20" /><motion.div initial={{ height: 0 }} animate={{ height: `${h * 0.6}%` }} transition={{ duration: 1.5, delay: i * 0.05 + 0.3 }} className="absolute bottom-0 left-0 right-0 bg-purple-600 rounded-xl transition-all" /></div></div>
+                    ))}
+                 </div>
+              </div>
+              <div className="p-10 bg-white dark:bg-slate-950 border border-slate-200 dark:border-purple-500/10 rounded-[3.5rem] shadow-sm flex flex-col">
+                 <div className="flex items-center justify-between mb-10"><h4 className="text-2xl font-display font-black uppercase tracking-tighter">System Health</h4><Zap size={24} className="text-purple-500 animate-bounce" /></div>
+                 <div className="space-y-6 flex-1 overflow-y-auto no-scrollbar">
+                    {systems.map((sys, i) => (
+                      <div key={sys.label} className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-purple-500/5 transition-all">
+                         <div className="flex items-start justify-between mb-4"><div className={`p-3 rounded-2xl ${sys.health > 95 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}><sys.icon size={20} /></div><div className="text-right"><p className="text-[10px] font-black uppercase text-slate-400">Lat</p><p className="text-sm font-black">{sys.latency}</p></div></div>
+                         <h5 className="text-sm font-black uppercase tracking-tight mb-2">{sys.label}</h5><div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden"><div className={`h-full ${sys.health > 95 ? 'bg-emerald-500' : 'bg-rose-500'}`} style={{width: `${sys.health}%`}} /></div>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {subView === 'telemetry' && (
+          <motion.div 
+            key="telemetry" initial={{opacity: 0, x: -20}} animate={{opacity: 1, x: 0}} exit={{opacity: 0, x: 20}} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+             {[1,2,3,4,5,6].map(i => (
+               <div key={i} className="p-10 bg-slate-900 text-white rounded-[3rem] border border-white/5 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-[80px]" />
+                  <div className="flex items-center space-x-4 mb-8">
+                     <div className="p-4 bg-white/10 rounded-2xl"><Terminal size={24} className="text-purple-400" /></div>
+                     <div>
+                        <h4 className="text-lg font-black uppercase">Shard_Cluster_{i*12}</h4>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Inference Thread</p>
+                     </div>
+                  </div>
+                  <div className="space-y-4">
+                     <div className="flex justify-between text-xs font-bold"><span className="text-slate-500">Utilization</span><span className="text-purple-400">84.2%</span></div>
+                     <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden"><motion.div initial={{width: 0}} animate={{width: '84%'}} className="h-full bg-purple-500" /></div>
+                  </div>
+               </div>
+             ))}
+          </motion.div>
+        )}
+
+        {subView === 'incidents' && (
+          <motion.div 
+            key="incidents" initial={{opacity: 0, x: -20}} animate={{opacity: 1, x: 0}} exit={{opacity: 0, x: 20}} className="space-y-6"
+          >
+             {[
+               { id: 'INC-429', severity: 'High', msg: 'Neural Sync Desynchronization in Cluster Asia-1', time: '2m ago' },
+               { id: 'INC-812', severity: 'Critical', msg: 'Auth Key Revocation Failure on Admin Sarah', time: '14m ago' },
+               { id: 'INC-001', severity: 'Medium', msg: 'API Latency Threshold Exceeded (+400ms)', time: '1h ago' }
+             ].map((inc, i) => (
+               <div key={inc.id} className="p-8 bg-white dark:bg-slate-950 border border-slate-200 dark:border-purple-500/10 rounded-[2.5rem] flex items-center justify-between group hover:bg-rose-500/5 transition-all">
+                  <div className="flex items-center space-x-8">
+                     <div className={`p-5 rounded-2xl ${inc.severity === 'Critical' ? 'bg-rose-600 text-white shadow-xl shadow-rose-500/40' : inc.severity === 'High' ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-500'}`}><AlertTriangle size={32} /></div>
+                     <div>
+                        <div className="flex items-center space-x-3 mb-1">
+                           <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">{inc.id}</span>
+                           <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase ${inc.severity === 'Critical' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-500'}`}>{inc.severity}</span>
+                        </div>
+                        <h4 className="text-xl font-bold">{inc.msg}</h4>
+                        <p className="text-sm text-slate-500 mt-1">{inc.time} • Reported by Root Watchdog</p>
+                     </div>
+                  </div>
+                  <button className="px-8 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-xl">Resolve Thread</button>
+               </div>
+             ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
