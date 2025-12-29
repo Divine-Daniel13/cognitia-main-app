@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Cognitia - Premium AI Consultation",
+  "description": "A high-performance landing page for a futuristic AI consultation platform featuring real-time avatars, emotional voice, and seamless interaction.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
