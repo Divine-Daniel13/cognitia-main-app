@@ -16,6 +16,8 @@ import AdminModeration from './AdminModeration';
 import AdminTickets from './AdminTickets';
 import AdminBilling from './AdminBilling';
 import AdminContent from './AdminContent';
+import AdminAnalytics from './AdminAnalytics';
+import AdminAnnouncements from './AdminAnnouncements';
 
 interface AdminDashboardLayoutProps {
   theme: 'light' | 'dark';
@@ -73,9 +75,9 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ theme, togg
       case 'billing': return <AdminBilling isLoading={isLoading} />;
       case 'moderation': return <AdminModeration isLoading={isLoading} />;
       case 'support': return <AdminTickets isLoading={isLoading} />;
-      // Generic high-quality dummy views for the rest
-      case 'reports':
-      case 'notifs':
+      case 'reports': return <AdminAnalytics isLoading={isLoading} />;
+      case 'notifs': return <AdminAnnouncements isLoading={isLoading} />;
+      // Placeholders for remaining heavy-data views
       case 'feedback':
       case 'logs':
         return (
