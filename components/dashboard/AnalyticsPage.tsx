@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { BarChart, TrendingUp, PieChart, Info, Lock, Download } from 'lucide-react';
 import { Skeleton } from '../Skeleton';
 
-const AnalyticsPage: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
+const AnalyticsPage: React.FC<{ isLoading: boolean, onUpgrade?: () => void }> = ({ isLoading, onUpgrade }) => {
   if (isLoading) {
     return (
       <div className="space-y-8">
@@ -24,7 +24,10 @@ const AnalyticsPage: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
           <h1 className="text-3xl font-display font-bold">Session Analytics</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">Deep insights into your growth patterns.</p>
         </div>
-        <button className="flex items-center space-x-2 px-6 py-3 bg-brand-600 text-white rounded-2xl font-bold hover:bg-brand-700 transition-all shadow-xl shadow-brand-500/20">
+        <button 
+          onClick={() => alert('Generating full analytics report...')}
+          className="flex items-center space-x-2 px-6 py-3 bg-brand-600 text-white rounded-2xl font-bold hover:bg-brand-700 transition-all shadow-xl shadow-brand-500/20"
+        >
           <Download size={18} />
           <span>Report PDF</span>
         </button>
@@ -81,7 +84,6 @@ const AnalyticsPage: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
           </div>
         </div>
 
-        {/* Premium Gating Overlay Mock */}
         <div className="absolute inset-0 bg-slate-50/10 dark:bg-black/10 backdrop-blur-md rounded-[2.5rem] flex items-center justify-center border border-white/20">
            <div className="max-w-md p-10 bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl text-center border border-slate-200 dark:border-slate-800 animate-in zoom-in duration-500">
               <div className="w-16 h-16 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto mb-6">
@@ -91,7 +93,10 @@ const AnalyticsPage: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
               <p className="text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
                 Unlock deep sentiment tracking, session highlights, and cross-avatar growth metrics with Cognitia Premium.
               </p>
-              <button className="w-full py-4 rounded-2xl bg-brand-600 text-white font-bold hover:bg-brand-700 transition-all shadow-xl shadow-brand-500/30">
+              <button 
+                onClick={onUpgrade}
+                className="w-full py-4 rounded-2xl bg-brand-600 text-white font-bold hover:bg-brand-700 transition-all shadow-xl shadow-brand-500/30"
+              >
                 Upgrade to Premium
               </button>
            </div>

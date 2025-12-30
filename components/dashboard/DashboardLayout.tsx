@@ -33,6 +33,7 @@ import SupportPage from './SupportPage';
 import FavoritesPage from './FavoritesPage';
 import TranscriptsPage from './TranscriptsPage';
 import NotificationsPage from './NotificationsPage';
+import CheckoutPage from './CheckoutPage';
 
 interface DashboardLayoutProps {
   theme: 'light' | 'dark';
@@ -47,7 +48,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1000);
+    const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, [activeTab]);
 
@@ -75,9 +76,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
       case 'avatars': return <AvatarsPage isLoading={isLoading} onCall={() => setActiveTab('call')} />;
       case 'call': return <LiveCall onEnd={() => setActiveTab('dashboard')} />;
       case 'history': return <HistoryPage isLoading={isLoading} />;
-      case 'analytics': return <AnalyticsPage isLoading={isLoading} />;
+      case 'analytics': return <AnalyticsPage isLoading={isLoading} onUpgrade={() => setActiveTab('subscription')} />;
       case 'wallet': return <WalletPage isLoading={isLoading} onNavigate={setActiveTab} />;
-      case 'subscription': return <SubscriptionPage isLoading={isLoading} />;
+      case 'subscription': return <SubscriptionPage isLoading={isLoading} onChoose={() => setActiveTab('checkout')} />;
+      case 'checkout': return <CheckoutPage onBack={() => setActiveTab('subscription')} onSuccess={() => setActiveTab('dashboard')} />;
       case 'settings': return <SettingsPage isLoading={isLoading} />;
       case 'help': return <SupportPage isLoading={isLoading} />;
       case 'favorites': return <FavoritesPage isLoading={isLoading} onCall={() => setActiveTab('call')} />;
@@ -89,15 +91,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
 
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-[#020617] overflow-hidden">
-      {/* Sidebar Desktop */}
       <motion.aside 
         initial={false}
         animate={{ width: isSidebarOpen ? 280 : 80 }}
         className="hidden lg:flex flex-col bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 z-[60]"
       >
         <div className="p-6 flex items-center justify-between overflow-hidden">
-          <div className="flex items-center space-x-3 shrink-0">
-            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center">
+          <div className="flex items-center space-x-3 shrink-0 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
+            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center shadow-lg">
               <Sparkles size={16} className="text-white" />
             </div>
             {isSidebarOpen && <span className="text-xl font-bold font-display whitespace-nowrap">Cognitia</span>}
@@ -140,22 +141,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
             label="Logout" 
             icon={LogOut} 
             isOpen={isSidebarOpen} 
-            onClick={() => window.location.reload()}
+            onClick={onExitDashboard}
             className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10"
           />
         </div>
       </motion.aside>
 
-      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <TopBar 
           theme={theme} 
           toggleTheme={toggleTheme} 
           setMobileMenuOpen={setMobileMenuOpen} 
           onNavigate={setActiveTab}
+          onLogout={onExitDashboard}
         />
         
-        <main className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:p-8 bg-slate-50 dark:bg-[#020617]">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-8 bg-slate-50 dark:bg-[#020617] custom-scrollbar">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab + (isLoading ? '-loading' : '')}
@@ -171,7 +172,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
         </main>
       </div>
 
-      {/* Mobile Drawer */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -229,7 +229,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
                 ))}
               </div>
               <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
-                 <SidebarItem id="logout" label="Logout" icon={LogOut} isOpen={true} onClick={() => window.location.reload()} className="text-red-500" />
+                 <SidebarItem id="logout" label="Logout" icon={LogOut} isOpen={true} onClick={onExitDashboard} className="text-red-500" />
               </div>
             </motion.div>
           </>

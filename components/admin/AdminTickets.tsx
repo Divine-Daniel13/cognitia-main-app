@@ -1,15 +1,19 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Ticket, MessageSquare, Clock, User, CheckCircle, Search, Filter, MoreVertical, Mail } from 'lucide-react';
 import { Skeleton } from '../Skeleton';
 
 const AdminTickets: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
+  const [filter, setFilter] = useState('Open');
+
   const tickets = [
     { id: 'tk_12', subject: 'Credit refill failed', user: 'Mark Robinson', priority: 'High', date: '2m ago', status: 'Open' },
     { id: 'tk_05', subject: 'Avatar pronunciation issue', user: 'Lily Carter', priority: 'Medium', date: '4h ago', status: 'In Progress' },
     { id: 'tk_99', subject: 'Refund request: Session c_42', user: 'Robert Zhang', priority: 'Low', date: '1d ago', status: 'Closed' },
   ];
+
+  const filteredTickets = filter === 'All' ? tickets : tickets.filter(t => t.status === filter || (filter === 'Open' && t.status !== 'Closed'));
 
   if (isLoading) {
     return (
@@ -30,7 +34,10 @@ const AdminTickets: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
           <p className="text-slate-500 dark:text-slate-400 mt-1">Manage user inquiries, technical issues, and billing escalations.</p>
         </div>
         <div className="flex items-center space-x-3">
-           <button className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-sm font-bold shadow-xl shadow-indigo-500/20 hover:bg-indigo-700 transition-all">
+           <button 
+            onClick={() => alert('Launching Secure Admin Live Chat Terminal...')}
+            className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-sm font-bold shadow-xl shadow-indigo-500/20 hover:bg-indigo-700 transition-all"
+           >
               Launch Live Chat
            </button>
         </div>
@@ -43,7 +50,11 @@ const AdminTickets: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
          </div>
          <div className="flex p-1 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl">
             {['Open', 'Closed', 'All'].map(t => (
-              <button key={t} className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${t === 'Open' ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}>
+              <button 
+                key={t} 
+                onClick={() => setFilter(t)}
+                className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${filter === t ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}
+              >
                  {t}
               </button>
             ))}
@@ -51,46 +62,56 @@ const AdminTickets: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
       </div>
 
       <div className="space-y-4">
-         {tickets.map((tk, idx) => (
-           <motion.div 
-             key={tk.id}
-             initial={{ opacity: 0, x: -20 }}
-             animate={{ opacity: 1, x: 0 }}
-             transition={{ delay: idx * 0.1 }}
-             className="p-8 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:border-indigo-500/30 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6 group"
-           >
-              <div className="flex items-center space-x-6">
-                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
-                   tk.priority === 'High' ? 'bg-rose-500/10 text-rose-500' : 'bg-slate-100 text-slate-500'
-                 }`}>
-                    <Ticket size={28} />
-                 </div>
-                 <div>
-                    <div className="flex items-center space-x-3 mb-1">
-                       <h5 className="font-bold text-lg leading-tight">{tk.subject}</h5>
-                       <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${
-                         tk.status === 'Open' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500'
-                       }`}>{tk.status}</span>
-                    </div>
-                    <div className="flex items-center space-x-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                       <span className="flex items-center space-x-1"><User size={12}/><span>{tk.user}</span></span>
-                       <span className="flex items-center space-x-1"><Clock size={12}/><span>{tk.date}</span></span>
-                       <span className="flex items-center space-x-1"><Mail size={12}/><span>{tk.id}</span></span>
-                    </div>
-                 </div>
-              </div>
+         <AnimatePresence mode="popLayout">
+           {filteredTickets.map((tk, idx) => (
+             <motion.div 
+               key={tk.id}
+               layout
+               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ delay: idx * 0.1 }}
+               className="p-8 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:border-indigo-500/30 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6 group"
+             >
+                <div className="flex items-center space-x-6">
+                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
+                     tk.priority === 'High' ? 'bg-rose-500/10 text-rose-500' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                   }`}>
+                      <Ticket size={28} />
+                   </div>
+                   <div>
+                      <div className="flex items-center space-x-3 mb-1">
+                         <h5 className="font-bold text-lg leading-tight">{tk.subject}</h5>
+                         <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${
+                           tk.status === 'Open' ? 'bg-emerald-500 text-white' : tk.status === 'In Progress' ? 'bg-amber-500 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
+                         }`}>{tk.status}</span>
+                      </div>
+                      <div className="flex items-center space-x-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                         <span className="flex items-center gap-1.5"><User size={12}/><span>{tk.user}</span></span>
+                         <span className="flex items-center gap-1.5"><Clock size={12}/><span>{tk.date}</span></span>
+                         <span className="flex items-center gap-1.5"><Mail size={12}/><span>{tk.id}</span></span>
+                      </div>
+                   </div>
+                </div>
 
-              <div className="flex items-center space-x-3">
-                 <button className="px-6 py-3 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 font-bold text-sm hover:bg-indigo-500/10 hover:text-indigo-600 transition-all flex items-center space-x-2">
-                    <MessageSquare size={16} />
-                    <span>Open Ticket</span>
-                 </button>
-                 <button className="p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                    <MoreVertical size={20} />
-                 </button>
-              </div>
-           </motion.div>
-         ))}
+                <div className="flex items-center space-x-3">
+                   <button 
+                    onClick={() => alert(`Opening ticket ${tk.id} management portal...`)}
+                    className="px-6 py-3 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 font-bold text-sm hover:bg-indigo-500/10 hover:text-indigo-600 transition-all flex items-center space-x-2"
+                   >
+                      <MessageSquare size={16} />
+                      <span>Open Ticket</span>
+                   </button>
+                   <div className="relative group/pop">
+                      <button className="p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <MoreVertical size={20} />
+                      </button>
+                      <div className="absolute right-0 bottom-full mb-2 w-32 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-2 opacity-0 invisible group-hover/pop:opacity-100 group-hover/pop:visible transition-all shadow-2xl z-10">
+                        <button className="w-full text-left p-2 text-[10px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg">Assign to me</button>
+                        <button className="w-full text-left p-2 text-[10px] font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/10 rounded-lg">Priority High</button>
+                      </div>
+                   </div>
+                </div>
+             </motion.div>
+           ))}
+         </AnimatePresence>
       </div>
       <div className="text-center pt-8">
          <p className="text-sm font-medium text-slate-500">Auto-refreshing every 30s • <span className="text-indigo-500 cursor-pointer hover:underline">Sync Manual</span></p>

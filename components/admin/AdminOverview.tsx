@@ -1,17 +1,24 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
-// Added ShieldAlert to imports
-import { Users, Video, DollarSign, Heart, ArrowUpRight, TrendingUp, Activity, Globe, ShieldAlert } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Users, Video, DollarSign, Heart, ArrowUpRight, TrendingUp, Activity, Globe, ShieldAlert, RefreshCw } from 'lucide-react';
 import { Skeleton } from '../Skeleton';
 
 const AdminOverview: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
+  const [range, setRange] = useState('Live');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const kpis = [
-    { label: 'Total Platform Users', value: '428,291', change: '+12.5%', icon: Users, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+    { label: 'Total Platform Users', value: range === 'Live' ? '428,291' : range === '24h' ? '2,401' : '14,291', change: '+12.5%', icon: Users, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
     { label: 'Active Live Calls', value: '1,242', change: '+3.2%', icon: Video, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
     { label: 'Platform Revenue', value: '$1.2M', change: '+24%', icon: DollarSign, color: 'text-amber-500', bg: 'bg-amber-500/10' },
     { label: 'Avatar Satisfaction', value: '98.4%', change: '+0.4%', icon: Heart, color: 'text-rose-500', bg: 'bg-rose-500/10' },
   ];
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => setIsRefreshing(false), 1000);
+  };
 
   if (isLoading) {
     return (
@@ -35,9 +42,15 @@ const AdminOverview: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
           <p className="text-slate-500 dark:text-slate-400 mt-1">Real-time performance and operational metrics.</p>
         </div>
         <div className="flex items-center space-x-2 bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800">
-           <button className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-500/20">Live</button>
-           <button className="px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-xs font-bold transition-all">24h</button>
-           <button className="px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-xs font-bold transition-all">7d</button>
+           {['Live', '24h', '7d'].map(t => (
+             <button 
+              key={t}
+              onClick={() => setRange(t)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${range === t ? 'bg-indigo-600 text-white shadow-lg' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+             >
+               {t}
+             </button>
+           ))}
         </div>
       </div>
 
@@ -55,7 +68,7 @@ const AdminOverview: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
                 <div className={`w-14 h-14 rounded-2xl ${kpi.bg} ${kpi.color} flex items-center justify-center transition-transform group-hover:rotate-6`}>
                    <kpi.icon size={28} />
                 </div>
-                <div className="flex items-center space-x-1 px-2.5 py-1 bg-emerald-500/10 text-emerald-500 rounded-lg text-xs font-bold">
+                <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-emerald-500/10 text-emerald-500 rounded-lg text-xs font-bold">
                    <TrendingUp size={14} />
                    <span>{kpi.change}</span>
                 </div>
@@ -67,25 +80,14 @@ const AdminOverview: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Global Traffic Chart */}
         <div className="lg:col-span-2 p-10 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-[3rem] shadow-sm">
            <div className="flex items-center justify-between mb-12">
               <div>
-                <h4 className="text-2xl font-bold">Platform Traffic</h4>
+                <h4 className="text-2xl font-bold">Platform Traffic ({range})</h4>
                 <p className="text-sm text-slate-400 font-medium">Session density across global regions</p>
               </div>
-              <div className="flex items-center space-x-3">
-                 <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
-                    <span className="text-xs font-bold text-slate-400">Mobile</span>
-                 </div>
-                 <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-indigo-300"></div>
-                    <span className="text-xs font-bold text-slate-400">Desktop</span>
-                 </div>
-              </div>
+              <button onClick={handleRefresh} className={`p-2 text-slate-400 hover:text-indigo-500 transition-all ${isRefreshing ? 'animate-spin' : ''}`}><RefreshCw size={20}/></button>
            </div>
-           
            <div className="h-72 flex items-end justify-between px-4 gap-4">
               {[40, 60, 45, 90, 65, 80, 55, 70, 40, 85, 95, 60].map((h, i) => (
                 <div key={i} className="flex-1 flex flex-col gap-1.5 items-center group">
@@ -109,7 +111,6 @@ const AdminOverview: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
            </div>
         </div>
 
-        {/* System Logs / Notifications */}
         <div className="p-10 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-[3rem] shadow-sm flex flex-col">
            <div className="flex items-center justify-between mb-8">
               <h4 className="text-2xl font-bold">Activity Feed</h4>
@@ -134,7 +135,10 @@ const AdminOverview: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
                 </div>
               ))}
            </div>
-           <button className="w-full py-4 mt-10 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-900 transition-all">
+           <button 
+            onClick={() => alert('Accessing full platform audit logs...')}
+            className="w-full py-4 mt-10 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-900 transition-all"
+           >
               View Audit Logs
            </button>
         </div>

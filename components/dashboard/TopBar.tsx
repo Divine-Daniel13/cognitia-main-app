@@ -8,9 +8,10 @@ interface TopBarProps {
   toggleTheme: () => void;
   setMobileMenuOpen: (open: boolean) => void;
   onNavigate: (tab: string) => void;
+  onLogout: () => void;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ theme, toggleTheme, setMobileMenuOpen, onNavigate }) => {
+const TopBar: React.FC<TopBarProps> = ({ theme, toggleTheme, setMobileMenuOpen, onNavigate, onLogout }) => {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -32,7 +33,7 @@ const TopBar: React.FC<TopBarProps> = ({ theme, toggleTheme, setMobileMenuOpen, 
   ];
 
   return (
-    <header className="h-20 flex items-center justify-between px-4 lg:px-8 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 z-50">
+    <header className="h-20 flex items-center justify-between px-4 lg:px-8 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 z-50 transition-all duration-300">
       <div className="flex items-center space-x-4 flex-1">
         <button 
           onClick={() => setMobileMenuOpen(true)}
@@ -52,7 +53,6 @@ const TopBar: React.FC<TopBarProps> = ({ theme, toggleTheme, setMobileMenuOpen, 
       </div>
 
       <div className="flex items-center space-x-2 md:space-x-4">
-        {/* Credits Pill */}
         <motion.button 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -63,7 +63,6 @@ const TopBar: React.FC<TopBarProps> = ({ theme, toggleTheme, setMobileMenuOpen, 
           <span className="text-xs font-bold uppercase tracking-tight">1,234 Cr</span>
         </motion.button>
 
-        {/* Theme Toggle */}
         <button 
           onClick={toggleTheme}
           className="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
@@ -71,7 +70,6 @@ const TopBar: React.FC<TopBarProps> = ({ theme, toggleTheme, setMobileMenuOpen, 
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
 
-        {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <button 
             onClick={() => setIsNotifOpen(!isNotifOpen)}
@@ -107,7 +105,6 @@ const TopBar: React.FC<TopBarProps> = ({ theme, toggleTheme, setMobileMenuOpen, 
           </AnimatePresence>
         </div>
 
-        {/* User Profile */}
         <div className="relative" ref={profileRef}>
           <div 
             onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -153,7 +150,10 @@ const TopBar: React.FC<TopBarProps> = ({ theme, toggleTheme, setMobileMenuOpen, 
                   <span className="text-sm font-medium">Settings</span>
                 </button>
                 <div className="h-px bg-slate-100 dark:bg-slate-800 my-2" />
-                <button className="w-full flex items-center space-x-3 px-6 py-3 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-500 transition-colors" onClick={() => window.location.reload()}>
+                <button 
+                  className="w-full flex items-center space-x-3 px-6 py-3 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-500 transition-colors" 
+                  onClick={() => { onLogout(); setIsProfileOpen(false); }}
+                >
                   <LogOut size={18} />
                   <span className="text-sm font-bold">Sign Out</span>
                 </button>

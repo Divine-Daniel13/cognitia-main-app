@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, SlidersHorizontal, Globe, Star, Phone, Video, Heart } from 'lucide-react';
+import { Search, SlidersHorizontal, Globe, Star, Phone, Video, Heart, X, Check } from 'lucide-react';
 import { AVATARS } from '../../constants';
 import { AvatarSkeleton } from '../Skeleton';
 
@@ -13,15 +13,23 @@ interface AvatarsPageProps {
 const AvatarsPage: React.FC<AvatarsPageProps> = ({ isLoading, onCall }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [selectedLangs, setSelectedLangs] = useState<string[]>([]);
 
   const categories = ['All', 'Psychologist', 'Business', 'Language', 'Tech'];
+  const languages = ['English', 'Spanish', 'Mandarin', 'French', 'German'];
 
   const filtered = AVATARS.filter(a => {
     const matchesSearch = a.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          a.profession.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = activeFilter === 'All' || a.profession.includes(activeFilter);
-    return matchesSearch && matchesFilter;
+    const matchesLang = selectedLangs.length === 0 || a.language.some(l => selectedLangs.includes(l));
+    return matchesSearch && matchesFilter && matchesLang;
   });
+
+  const toggleLang = (lang: string) => {
+    setSelectedLangs(prev => prev.includes(lang) ? prev.filter(l => l !== lang) : [...prev, lang]);
+  };
 
   return (
     <div className="space-y-8 pb-10">
@@ -43,13 +51,16 @@ const AvatarsPage: React.FC<AvatarsPageProps> = ({ isLoading, onCall }) => {
             className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all"
           />
         </div>
-        <button className="px-6 py-4 rounded-[1.5rem] glass border-slate-200 dark:border-slate-800 flex items-center space-x-2 font-bold hover:bg-slate-100 dark:hover:bg-slate-900 transition-all">
+        <button 
+          onClick={() => setIsFilterModalOpen(true)}
+          className="px-6 py-4 rounded-[1.5rem] glass border-slate-200 dark:border-slate-800 flex items-center space-x-2 font-bold hover:bg-slate-100 dark:hover:bg-slate-900 transition-all"
+        >
           <SlidersHorizontal size={20} />
-          <span>Filters</span>
+          <span>Filters {selectedLangs.length > 0 && `(${selectedLangs.length})`}</span>
         </button>
       </div>
 
-      <div className="flex items-center space-x-2 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
+      <div className="flex items-center space-x-2 overflow-x-auto pb-2 no-scrollbar">
         {categories.map(cat => (
           <button
             key={cat}
@@ -130,6 +141,57 @@ const AvatarsPage: React.FC<AvatarsPageProps> = ({ isLoading, onCall }) => {
           </AnimatePresence>
         )}
       </div>
+
+      <AnimatePresence>
+        {isFilterModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+             <motion.div 
+               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+               onClick={() => setIsFilterModalOpen(false)}
+               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+             />
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+               className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 shadow-2xl border border-slate-200 dark:border-slate-800"
+             >
+                <div className="flex justify-between items-center mb-8">
+                   <h3 className="text-2xl font-bold">Advanced Filters</h3>
+                   <button onClick={() => setIsFilterModalOpen(false)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"><X size={20}/></button>
+                </div>
+                <div className="space-y-6">
+                   <div>
+                      <p className="text-xs font-black uppercase text-slate-400 tracking-widest mb-4">Language</p>
+                      <div className="flex flex-wrap gap-2">
+                         {languages.map(lang => (
+                           <button 
+                             key={lang}
+                             onClick={() => toggleLang(lang)}
+                             className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
+                               selectedLangs.includes(lang) ? 'bg-brand-600 border-brand-600 text-white' : 'border-slate-200 dark:border-slate-800 text-slate-500'
+                             }`}
+                           >
+                              {lang}
+                           </button>
+                         ))}
+                      </div>
+                   </div>
+                   <button 
+                    onClick={() => { setSelectedLangs([]); setActiveFilter('All'); setIsFilterModalOpen(false); }}
+                    className="w-full py-4 text-sm font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                   >
+                     Reset all filters
+                   </button>
+                   <button 
+                    onClick={() => setIsFilterModalOpen(false)}
+                    className="w-full py-4 bg-brand-600 text-white rounded-2xl font-bold shadow-xl shadow-brand-500/20"
+                   >
+                     Show {filtered.length} Experts
+                   </button>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {!isLoading && filtered.length === 0 && (
         <div className="py-20 text-center">
