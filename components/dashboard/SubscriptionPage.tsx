@@ -4,7 +4,12 @@ import { motion } from 'framer-motion';
 import { Check, Sparkle, Zap, CreditCard, ShieldCheck } from 'lucide-react';
 import { PRICING_PLANS } from '../../constants';
 
-const SubscriptionPage: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
+interface SubscriptionPageProps {
+  isLoading: boolean;
+  onChoose: () => void;
+}
+
+const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ isLoading, onChoose }) => {
   return (
     <div className="max-w-6xl mx-auto space-y-12 pb-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -55,7 +60,9 @@ const SubscriptionPage: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
               ))}
             </ul>
 
-            <button className={`w-full py-4 rounded-2xl font-bold transition-all ${
+            <button 
+              onClick={onChoose}
+              className={`w-full py-4 rounded-2xl font-bold transition-all ${
               plan.isPopular 
                 ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' 
                 : 'bg-brand-600 text-white hover:bg-brand-700 shadow-xl shadow-brand-500/20'
@@ -78,7 +85,7 @@ const SubscriptionPage: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
                <p className="text-slate-400 max-w-sm">Dedicated training, SSO integration, and unlimited organizational scaling.</p>
             </div>
           </div>
-          <button className="px-10 py-5 bg-white text-slate-900 rounded-2xl font-black uppercase text-xs tracking-widest hover:opacity-90 transition-all">
+          <button className="px-10 py-5 bg-white text-slate-950 rounded-2xl font-black uppercase text-xs tracking-widest hover:opacity-90 transition-all">
             Contact Sales Team
           </button>
         </div>

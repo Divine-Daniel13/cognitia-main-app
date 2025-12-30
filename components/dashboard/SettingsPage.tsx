@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// Added Settings to the import list from lucide-react
 import { User, Bell, Lock, Globe, Shield, CreditCard, ChevronRight, X, Camera, Save, ArrowLeft, Settings } from 'lucide-react';
 
 const SettingsPage: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
