@@ -52,6 +52,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
     return () => clearTimeout(timer);
   }, [activeTab]);
 
+  // Auto-collapse sidebar on medium screens
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1280) setSidebarOpen(false);
+      else setSidebarOpen(true);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const navigation = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'avatars', label: 'AI Avatars', icon: Users },
@@ -91,24 +102,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
 
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-[#020617] overflow-hidden">
+      {/* Sidebar - Desktop */}
       <motion.aside 
         initial={false}
-        animate={{ width: isSidebarOpen ? 280 : 80 }}
+        animate={{ width: isSidebarOpen ? 280 : 88 }}
         className="hidden lg:flex flex-col bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 z-[60]"
       >
         <div className="p-6 flex items-center justify-between overflow-hidden">
           <div className="flex items-center space-x-3 shrink-0 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
-            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center shadow-lg">
-              <Sparkles size={16} className="text-white" />
+            <div className="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
+              <Sparkles size={18} className="text-white" />
             </div>
             {isSidebarOpen && <span className="text-xl font-bold font-display whitespace-nowrap">Cognitia</span>}
           </div>
-          <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-all">
+          <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all">
             <ChevronRight size={18} className={`transition-transform duration-300 ${isSidebarOpen ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
-        <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar no-scrollbar">
+        <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar no-scrollbar py-4">
           {navigation.map((item) => (
             <SidebarItem 
               key={item.id}
@@ -156,7 +168,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
           onLogout={onExitDashboard}
         />
         
-        <main className="flex-1 overflow-y-auto p-4 lg:p-8 bg-slate-50 dark:bg-[#020617] custom-scrollbar">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-slate-50 dark:bg-[#020617] custom-scrollbar">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab + (isLoading ? '-loading' : '')}
@@ -164,7 +176,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="h-full"
+              className="h-full max-w-7xl mx-auto"
             >
               {renderContent()}
             </motion.div>
@@ -172,6 +184,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
         </main>
       </div>
 
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -186,20 +199,20 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              className="fixed inset-y-0 left-0 w-[80%] max-w-sm bg-white dark:bg-slate-950 z-[80] lg:hidden p-6 flex flex-col shadow-2xl"
+              className="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white dark:bg-slate-950 z-[80] lg:hidden p-6 flex flex-col shadow-2xl"
             >
               <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center">
-                    <Sparkles size={16} className="text-white" />
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center">
+                    <Sparkles size={18} className="text-white" />
                   </div>
                   <span className="text-xl font-bold font-display">Cognitia</span>
                 </div>
-                <button onClick={() => setMobileMenuOpen(false)}>
+                <button onClick={() => setMobileMenuOpen(false)} className="p-2">
                   <X size={24} />
                 </button>
               </div>
-              <div className="flex-1 space-y-2 overflow-y-auto no-scrollbar">
+              <div className="flex-1 space-y-1 overflow-y-auto no-scrollbar">
                 {navigation.map((item) => (
                   <SidebarItem 
                     key={item.id}

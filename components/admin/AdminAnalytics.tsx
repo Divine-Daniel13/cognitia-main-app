@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart4, TrendingUp, PieChart, Users, Globe, Download, RefreshCw } from 'lucide-react';
+import { ChartNoAxesColumn, TrendingUp, PieChart, Users, Globe, Download, RefreshCw } from 'lucide-react';
 import { Skeleton } from '../Skeleton';
 
 const AdminAnalytics: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {

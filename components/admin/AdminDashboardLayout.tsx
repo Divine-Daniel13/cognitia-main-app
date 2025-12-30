@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, Users, UserPlus, PhoneIncoming, Image as ImageIcon, 
-  CreditCard, BarChart4, ShieldAlert, Megaphone, MessageSquareQuote, 
+  CreditCard, BarChart3, ShieldAlert, Megaphone, MessageSquareQuote, 
   Settings2, Ticket, ListTodo, LogOut, Menu, X, Search, Bell, Sun, Moon, 
   ChevronRight, Globe, Sparkles, ChevronDown, User, Settings, FolderOpen, PieChart
 } from 'lucide-react';
@@ -57,7 +57,7 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ theme, togg
     { id: 'calls', label: 'Calls', icon: PhoneIncoming },
     { id: 'content', label: 'Visual Aids', icon: ImageIcon },
     { id: 'billing', label: 'Billing', icon: CreditCard },
-    { id: 'reports', label: 'Analytics', icon: BarChart4 },
+    { id: 'reports', label: 'Analytics', icon: BarChart3 },
     { id: 'moderation', label: 'Moderation', icon: ShieldAlert },
     { id: 'notifs', label: 'Announcements', icon: Megaphone },
     { id: 'feedback', label: 'Reviews', icon: MessageSquareQuote },

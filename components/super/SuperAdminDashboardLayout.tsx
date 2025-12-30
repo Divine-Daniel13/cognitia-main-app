@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, ShieldCheck, Activity, DollarSign, Globe, Database, 
   Settings, Terminal, Edit3, LogOut, Sparkles, Menu, X, Search, Bell, Sun, 
   Moon, Zap, Lock, Cpu, RefreshCw, Code, ChevronDown, User, CreditCard, 
-  ShieldAlert, Layers, Share2, TerminalSquare
+  ShieldAlert, Layers, Share2, SquareTerminal
 } from 'lucide-react';
 import SidebarItem from '../dashboard/SidebarItem';
 import SuperOverview from './SuperOverview';
@@ -109,7 +109,7 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
                    <p className="text-slate-500 font-medium">Root level terminal for {activeTab} operations.</p>
                 </div>
                 <div className="flex space-x-2">
-                   <button className="p-3 rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20"><TerminalSquare size={20}/></button>
+                   <button className="p-3 rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20"><SquareTerminal size={20}/></button>
                    <button className="p-3 rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20"><Share2 size={20}/></button>
                 </div>
              </div>

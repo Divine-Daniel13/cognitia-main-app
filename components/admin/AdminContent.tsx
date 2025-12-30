@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ImageIcon, FolderOpen, Plus, MoreVertical, FileText, Share2, Trash2, Video, Code } from 'lucide-react';
+import { Image as ImageIcon, FolderOpen, Plus, MoreVertical, FileText, Share2, Trash2, Video, Code } from 'lucide-react';
 import { Skeleton } from '../Skeleton';
 
 const AdminContent: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
