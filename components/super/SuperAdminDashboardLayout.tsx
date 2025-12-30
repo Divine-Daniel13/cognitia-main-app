@@ -3,9 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, Users, ShieldCheck, Activity, DollarSign, Globe, Database, 
-  Settings, Terminal, Edit3, LogOut, Sparkles, Menu, X, Search, Bell, Sun, 
+  Settings, Terminal, FileEdit, LogOut, Sparkles, Menu, X, Search, Bell, Sun, 
   Moon, Zap, Lock, Cpu, RefreshCw, Code, ChevronDown, User, CreditCard, 
-  ShieldAlert, Layers, Share2, SquareTerminal
+  ShieldAlert, Layers, Share2
 } from 'lucide-react';
 import SidebarItem from '../dashboard/SidebarItem';
 import SuperOverview from './SuperOverview';
@@ -70,17 +70,14 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
     {
       group: 'Platform Builder',
       items: [
-        { id: 'pages', label: 'Page Builder', icon: Code },
-        { id: 'landing', label: 'Landing Editor', icon: Edit3 },
+        { id: 'landing', label: 'Landing Editor', icon: FileEdit },
       ]
     },
     {
       group: 'Core System',
       items: [
         { id: 'config', label: 'System Config', icon: Settings },
-        { id: 'security', label: 'Security & RBAC', icon: Lock },
         { id: 'audit', label: 'Audit Trails', icon: Terminal },
-        { id: 'testing', label: 'CI/CD & Rolls', icon: RefreshCw },
       ]
     }
   ];
@@ -96,11 +93,7 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
       case 'avatars': return <SuperAvatarControl isLoading={isLoading} />;
       case 'landing': return <LandingEditor isLoading={isLoading} />;
       case 'config': return <SystemConfig isLoading={isLoading} />;
-      // Fallback for system modules with heavy dummy data
-      case 'pages':
-      case 'security':
-      case 'audit':
-      case 'testing':
+      default:
         return (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
              <div className="flex justify-between items-center">
@@ -109,7 +102,7 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
                    <p className="text-slate-500 font-medium">Root level terminal for {activeTab} operations.</p>
                 </div>
                 <div className="flex space-x-2">
-                   <button className="p-3 rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20"><SquareTerminal size={20}/></button>
+                   <button className="p-3 rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20"><Terminal size={20}/></button>
                    <button className="p-3 rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20"><Share2 size={20}/></button>
                 </div>
              </div>
@@ -152,7 +145,6 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
              </div>
           </div>
         );
-      default: return null;
     }
   };
 
@@ -215,11 +207,6 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
       </motion.aside>
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        <div className="absolute inset-0 pointer-events-none opacity-20 -z-10">
-           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple-500/10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2" />
-           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 blur-[100px] rounded-full -translate-x-1/2 translate-y-1/2" />
-        </div>
-
         <header className="h-24 flex items-center justify-between px-4 lg:px-10 bg-white/60 dark:bg-slate-950/60 backdrop-blur-3xl border-b border-purple-500/10 z-50">
           <div className="flex items-center space-x-6 flex-1">
             <button onClick={() => setMobileMenuOpen(true)} className="p-3 lg:hidden rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-800">
@@ -228,15 +215,6 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
             <div className="hidden md:flex items-center space-x-3 px-5 py-3 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-purple-500/20 shadow-sm">
                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Cluster: Stable</span>
-            </div>
-            <div className="hidden lg:flex items-center max-w-lg w-full relative group">
-              <Search className="absolute left-4 text-slate-400 group-focus-within:text-purple-500 transition-colors" size={20} />
-              <input 
-                type="text" 
-                placeholder="Query global platform state..."
-                className="w-full pl-14 pr-6 py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-purple-500/10 focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-sm"
-              />
-              <div className="absolute right-4 px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-black text-slate-400">⌘K</div>
             </div>
           </div>
 
@@ -253,32 +231,27 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
                 <Bell size={22} className="text-slate-500" />
                 <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-purple-600 rounded-full ring-2 ring-white dark:ring-slate-950 animate-pulse"></span>
               </button>
-
               <AnimatePresence>
                 {isNotifOpen && (
                   <motion.div
                     initial={{ opacity: 0, y: 15, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                    className="absolute right-0 mt-4 w-96 rounded-[2.5rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden py-8 z-[100]"
+                    className="absolute right-0 mt-4 w-80 rounded-[2.5rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden py-6 z-[100]"
                   >
-                    <div className="px-8 pb-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                       <h3 className="text-xl font-display font-black uppercase tracking-tighter">System Alerts</h3>
-                       <button className="text-[10px] font-black uppercase text-purple-600 tracking-widest">Clear All</button>
+                    <div className="px-6 pb-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                       <h4 className="text-sm font-black uppercase tracking-widest">Root Alerts</h4>
+                       <span className="text-[10px] bg-purple-500 text-white px-2 py-0.5 rounded-full">3 New</span>
                     </div>
-                    <div className="max-h-[400px] overflow-y-auto no-scrollbar">
+                    <div className="max-h-64 overflow-y-auto custom-scrollbar">
                        {[
-                         { title: 'Inference Node Asia-1', desc: 'Critical load reached. Auto-scaling initiated.', type: 'critical', time: '2m ago' },
-                         { title: 'Security Protocol Breach', desc: 'Admin account Sarah attempted root access.', type: 'warning', time: '14m ago' },
-                         { title: 'Revenue Target Hit', desc: 'Platform hit $5M ARR goal.', type: 'success', time: '1h ago' },
-                       ].map((notif, i) => (
-                         <div key={i} className="px-8 py-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-50 dark:border-slate-800 last:border-none">
-                            <div className="flex items-center space-x-3 mb-2">
-                               <div className={`w-2 h-2 rounded-full ${notif.type === 'critical' ? 'bg-rose-500' : notif.type === 'warning' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
-                               <span className="text-sm font-bold">{notif.title}</span>
-                            </div>
-                            <p className="text-xs text-slate-500 leading-relaxed mb-2">{notif.desc}</p>
-                            <span className="text-[10px] font-black uppercase text-slate-400">{notif.time}</span>
+                         { id: 1, msg: 'High stress detected in Session #992', time: '2m ago', color: 'text-rose-500' },
+                         { id: 2, msg: 'Admin fleet expansion complete', time: '1h ago', color: 'text-emerald-500' },
+                         { id: 3, msg: 'Global revenue target reached', time: '4h ago', color: 'text-purple-500' }
+                       ].map(n => (
+                         <div key={n.id} className="px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer border-b border-slate-50 dark:border-slate-800/50">
+                            <p className="text-xs font-bold">{n.msg}</p>
+                            <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">{n.time}</p>
                          </div>
                        ))}
                     </div>
@@ -357,27 +330,65 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileMenuOpen(false)} className="fixed inset-0 bg-slate-950/80 backdrop-blur-lg z-[100] lg:hidden" />
-            <motion.div initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} className="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white dark:bg-slate-950 z-[110] lg:hidden p-8 flex flex-col shadow-2xl" >
-              <div className="flex items-center justify-between mb-12">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[70] lg:hidden"
+            />
+            <motion.div 
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              className="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white dark:bg-slate-950 z-[80] lg:hidden p-6 flex flex-col shadow-2xl overflow-hidden"
+            >
+              <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-2xl bg-purple-600 flex items-center justify-center shadow-lg"><ShieldCheck size={20} className="text-white" /></div>
-                  <span className="text-2xl font-black font-display tracking-tighter uppercase">Root</span>
+                  <div className="w-10 h-10 rounded-2xl bg-purple-600 flex items-center justify-center rotate-12">
+                    <ShieldCheck size={20} className="text-white" />
+                  </div>
+                  <div>
+                    <span className="text-xl font-black font-display tracking-tighter uppercase">Cognitia</span>
+                    <p className="text-[8px] font-black uppercase text-purple-600 tracking-widest -mt-1">Root Access</p>
+                  </div>
                 </div>
-                <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900"><X size={24} /></button>
+                <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900">
+                  <X size={24} />
+                </button>
               </div>
-              <div className="flex-1 space-y-6 overflow-y-auto no-scrollbar">
+
+              <div className="flex-1 space-y-8 overflow-y-auto no-scrollbar py-4 pr-2">
                 {navGroups.map((group) => (
                   <div key={group.group} className="space-y-2">
-                    <p className="px-4 text-[10px] font-black uppercase text-slate-400 tracking-widest mb-3">{group.group}</p>
+                    <p className="px-4 text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] mb-3">{group.group}</p>
                     {group.items.map((item) => (
-                      <SidebarItem key={item.id} {...item} isOpen={true} isActive={activeTab === item.id} onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false); setIsLoading(true); }} className={activeTab === item.id ? 'bg-purple-500/10 text-purple-600' : ''} />
+                      <SidebarItem 
+                        key={item.id}
+                        {...item}
+                        isOpen={true}
+                        isActive={activeTab === item.id}
+                        onClick={() => {
+                          setActiveTab(item.id);
+                          setMobileMenuOpen(false);
+                          setIsLoading(true);
+                        }}
+                        className={activeTab === item.id ? 'bg-purple-600/10 text-purple-600' : ''}
+                      />
                     ))}
                   </div>
                 ))}
               </div>
-              <div className="pt-8 border-t border-slate-200 dark:border-slate-800">
-                 <SidebarItem id="logout" label="Sign Out Root" icon={LogOut} isOpen={true} onClick={onExitDashboard} className="text-rose-500" />
+
+              <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
+                 <SidebarItem 
+                  id="logout" 
+                  label="Eject Terminal" 
+                  icon={LogOut} 
+                  isOpen={true} 
+                  onClick={onExitDashboard} 
+                  className="text-rose-500" 
+                 />
               </div>
             </motion.div>
           </>

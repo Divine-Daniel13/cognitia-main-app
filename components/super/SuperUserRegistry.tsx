@@ -1,10 +1,14 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Search, SlidersHorizontal, MoreHorizontal, UserCheck, UserX, ExternalLink, Shield, Zap, Mail, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, SlidersHorizontal, UserX, ExternalLink, Shield, Zap, Mail, X, CheckCircle2 } from 'lucide-react';
 import { Skeleton } from '../Skeleton';
 
 const SuperUserRegistry: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
+  const [isProvisionModalOpen, setIsProvisionModalOpen] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const users = [
     { id: 'usr_812', name: 'Michael Robinson', email: 'm.robin@gmail.com', plan: 'Enterprise', credits: '124,234', status: 'Active', region: 'NA-East' },
     { id: 'usr_239', name: 'Lily Carter', email: 'lily.c@dev.io', plan: 'Pro', credits: '4,500', status: 'Active', region: 'EU-West' },
@@ -12,6 +16,15 @@ const SuperUserRegistry: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
     { id: 'usr_442', name: 'Robert Zhang', email: 'rob.z@venture.net', plan: 'Enterprise', credits: '82,890', status: 'Active', region: 'EU-North' },
     { id: 'usr_105', name: 'Sarah Jenkins', email: 's.jenkins@edu.org', plan: 'Pro', credits: '2,115', status: 'Active', region: 'NA-West' },
   ];
+
+  const handleProvision = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSuccess(true);
+    setTimeout(() => {
+      setIsSuccess(false);
+      setIsProvisionModalOpen(false);
+    }, 2000);
+  };
 
   if (isLoading) {
     return (
@@ -35,7 +48,10 @@ const SuperUserRegistry: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
           <h1 className="text-3xl font-display font-black uppercase tracking-tighter">Global User Registry</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Root-level oversight of all platform identities and credit reservoirs.</p>
         </div>
-        <button className="px-8 py-4 bg-purple-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-purple-500/30 hover:bg-purple-700 transition-all flex items-center space-x-3">
+        <button 
+          onClick={() => setIsProvisionModalOpen(true)}
+          className="px-8 py-4 bg-purple-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-purple-500/30 hover:bg-purple-700 transition-all flex items-center space-x-3"
+        >
            <Zap size={20} />
            <span>Provision Identity</span>
         </button>
@@ -50,7 +66,10 @@ const SuperUserRegistry: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
               className="w-full pl-16 pr-6 py-5 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-purple-500/10 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/5 transition-all font-medium"
             />
          </div>
-         <button className="px-8 py-5 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-purple-500/10 flex items-center space-x-3 font-bold hover:border-purple-500/50 transition-all">
+         <button 
+          onClick={() => setIsFilterModalOpen(true)}
+          className="px-8 py-5 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-purple-500/10 flex items-center space-x-3 font-bold hover:border-purple-500/50 transition-all"
+         >
             <SlidersHorizontal size={20} />
             <span className="text-sm">Logic Filters</span>
          </button>
@@ -149,6 +168,86 @@ const SuperUserRegistry: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
             </div>
          </div>
       </div>
+
+      <AnimatePresence>
+        {isProvisionModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsProvisionModalOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-[3rem] p-10 shadow-2xl border border-slate-200 dark:border-purple-500/20">
+                <div className="flex justify-between items-center mb-8">
+                   <h3 className="text-2xl font-black uppercase tracking-tighter">Identity Provisioning</h3>
+                   <button onClick={() => setIsProvisionModalOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"><X size={24}/></button>
+                </div>
+                {isSuccess ? (
+                  <div className="text-center py-10 animate-in zoom-in duration-500">
+                    <div className="w-20 h-20 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <CheckCircle2 size={48} className="animate-bounce" />
+                    </div>
+                    <h4 className="text-xl font-bold mb-2">Shard Allocated</h4>
+                    <p className="text-slate-500">Cognitia ID successfully instantiated in global registry.</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleProvision} className="space-y-6">
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-1">Legal Entity Name</label>
+                       <input required className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 focus:ring-2 focus:ring-purple-500/20" placeholder="Identity name" />
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-1">Identity Mailbox</label>
+                       <input required type="email" className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 focus:ring-2 focus:ring-purple-500/20" placeholder="user@domain.com" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-1">Initial Reservoir</label>
+                          <input required type="number" className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 focus:ring-2 focus:ring-purple-500/20" defaultValue="1000" />
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-1">Clearance Tier</label>
+                          <select className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 focus:ring-2 focus:ring-purple-500/20 appearance-none">
+                             <option>Enterprise</option>
+                             <option>Pro</option>
+                             <option>Free</option>
+                          </select>
+                       </div>
+                    </div>
+                    <button type="submit" className="w-full py-5 bg-purple-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-purple-500/20 hover:bg-purple-700 transition-all">Establish Neural Identity</button>
+                  </form>
+                )}
+             </motion.div>
+          </div>
+        )}
+
+        {isFilterModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsFilterModalOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 shadow-2xl border border-slate-200 dark:border-purple-500/20">
+                <div className="flex justify-between items-center mb-8">
+                   <h3 className="text-xl font-black uppercase tracking-widest">Logic Filtering</h3>
+                   <button onClick={() => setIsFilterModalOpen(false)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><X size={20}/></button>
+                </div>
+                <div className="space-y-6">
+                   <div>
+                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-4">Subscription Shard</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {['Enterprise', 'Pro', 'Standard', 'Free'].map(t => (
+                          <button key={t} className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest hover:border-purple-500/50 hover:bg-purple-500/5 transition-all">{t}</button>
+                        ))}
+                      </div>
+                   </div>
+                   <div>
+                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-4">Identity Status</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {['Active', 'Flagged', 'Suspended', 'Deactivated'].map(s => (
+                          <button key={s} className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest hover:border-purple-500/50 hover:bg-purple-500/5 transition-all">{s}</button>
+                        ))}
+                      </div>
+                   </div>
+                   <button onClick={() => setIsFilterModalOpen(false)} className="w-full py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl">Apply Selection</button>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

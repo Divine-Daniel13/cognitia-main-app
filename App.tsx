@@ -66,14 +66,22 @@ const App: React.FC = () => {
     else if (role === 'super-admin') setView('super-admin-dashboard');
     
     // Clear the specialized path on successful login
-    window.history.pushState({}, '', '/');
+    try {
+      window.history.pushState({}, '', '/');
+    } catch (e) {
+      console.warn('History pushState restricted in this environment.');
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem(CONFIG.AUTH_TOKEN_KEY);
     localStorage.removeItem(CONFIG.ROLE_KEY);
     setView('landing');
-    window.history.pushState({}, '', '/');
+    try {
+      window.history.pushState({}, '', '/');
+    } catch (e) {
+      console.warn('History pushState restricted in this environment.');
+    }
     // Ensure scroll to top
     window.scrollTo(0, 0);
   };
@@ -82,7 +90,11 @@ const App: React.FC = () => {
     setInitialRole(role);
     setView('auth');
     const path = role === 'super-admin' ? '/superadmin/login' : role === 'admin' ? '/admin/login' : '/auth';
-    window.history.pushState({}, '', path);
+    try {
+      window.history.pushState({}, '', path);
+    } catch (e) {
+      console.warn('History pushState restricted in this environment.');
+    }
   };
 
   return (
@@ -119,7 +131,12 @@ const App: React.FC = () => {
           >
             <AuthScreens 
               initialRole={initialRole}
-              onBack={() => { setView('landing'); window.history.pushState({}, '', '/'); }} 
+              onBack={() => { 
+                setView('landing'); 
+                try {
+                  window.history.pushState({}, '', '/'); 
+                } catch(e) {}
+              }} 
               onSuccess={handleLoginSuccess}
             />
           </motion.div>

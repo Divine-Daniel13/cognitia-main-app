@@ -11,6 +11,10 @@ const SuperSessionControl: React.FC<{ isLoading: boolean }> = ({ isLoading }) =>
     { id: 'sess_118', user: 'Sarah J.', avatar: 'Aiden Reed', duration: '28:01', stress: 45, status: 'Recording' },
   ];
 
+  const handleSessionAction = (action: string, id: string) => {
+    alert(`Platform Action: ${action} initiated for session ${id}.`);
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-10">
@@ -81,13 +85,22 @@ const SuperSessionControl: React.FC<{ isLoading: boolean }> = ({ isLoading }) =>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                 <button className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 hover:bg-emerald-500/10 hover:text-emerald-500 transition-all flex items-center justify-center">
+                 <button 
+                  onClick={() => handleSessionAction('Neural-Monitoring', sess.id)}
+                  className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 hover:bg-emerald-500/10 hover:text-emerald-500 transition-all flex items-center justify-center"
+                 >
                     <Play size={20} />
                  </button>
-                 <button className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 hover:bg-amber-500/10 hover:text-amber-500 transition-all flex items-center justify-center">
+                 <button 
+                  onClick={() => handleSessionAction('Neural-Pause', sess.id)}
+                  className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 hover:bg-amber-500/10 hover:text-amber-500 transition-all flex items-center justify-center"
+                 >
                     <Pause size={20} />
                  </button>
-                 <button className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 hover:bg-rose-500/10 hover:text-rose-500 transition-all flex items-center justify-center">
+                 <button 
+                  onClick={() => handleSessionAction('Neural-Eject', sess.id)}
+                  className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 hover:bg-rose-500/10 hover:text-rose-500 transition-all flex items-center justify-center"
+                 >
                     <XCircle size={20} />
                  </button>
               </div>
