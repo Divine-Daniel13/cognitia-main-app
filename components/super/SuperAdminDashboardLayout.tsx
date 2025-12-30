@@ -135,10 +135,10 @@ const SuperAdminDashboardLayout: React.FC<SuperAdminDashboardLayoutProps> = ({ t
                    <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 blur-3xl" />
                    <h4 className="text-xl font-display font-black uppercase tracking-tighter mb-8">Terminal Output</h4>
                    <div className="font-mono text-xs text-purple-300/80 space-y-2">
-                      <p className="flex items-center space-x-2"><span className="text-emerald-500">>>></span><span>Initializing system v3.4.1...</span></p>
-                      <p className="flex items-center space-x-2"><span className="text-emerald-500">>>></span><span>Root authorization level 7 detected.</span></p>
-                      <p className="flex items-center space-x-2"><span className="text-emerald-500">>>></span><span>Syncing global cluster shards...</span></p>
-                      <p className="flex items-center space-x-2"><span className="text-emerald-500">>>></span><span>Accessing {activeTab} reservoir...</span></p>
+                      <p className="flex items-center space-x-2"><span className="text-emerald-500">{'>>>'}</span><span>Initializing system v3.4.1...</span></p>
+                      <p className="flex items-center space-x-2"><span className="text-emerald-500">{'>>>'}</span><span>Root authorization level 7 detected.</span></p>
+                      <p className="flex items-center space-x-2"><span className="text-emerald-500">{'>>>'}</span><span>Syncing global cluster shards...</span></p>
+                      <p className="flex items-center space-x-2"><span className="text-emerald-500">{'>>>'}</span><span>Accessing {activeTab} reservoir...</span></p>
                       <div className="pt-4 flex space-x-4">
                          <div className="h-1 w-12 bg-purple-500/40 rounded-full overflow-hidden">
                             <motion.div animate={{x: [-48, 48]}} transition={{repeat: Infinity, duration: 1.5}} className="h-full w-full bg-purple-400" />
