@@ -18,17 +18,13 @@ import Footer from './Footer';
 interface LandingPageProps {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
-  onEnterDashboard: () => void;
-  onEnterAdmin: () => void;
-  onEnterSuperAdmin: () => void;
+  onEnterAuth: () => void;
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ 
   theme, 
   toggleTheme, 
-  onEnterDashboard, 
-  onEnterAdmin, 
-  onEnterSuperAdmin 
+  onEnterAuth
 }) => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -42,33 +38,11 @@ const LandingPage: React.FC<LandingPageProps> = ({
       <Navbar 
         theme={theme} 
         toggleTheme={toggleTheme} 
-        onEnterDashboard={onEnterDashboard} 
-        onEnterAdmin={onEnterAdmin}
-        onEnterSuperAdmin={onEnterSuperAdmin}
+        onEnterDashboard={onEnterAuth} 
       />
       <main>
-        <Hero onStart={onEnterDashboard} />
+        <Hero onStart={onEnterAuth} />
         
-        {/* Entrance Portal Buttons with enhanced layering and interactivity */}
-        <div className="relative z-20 flex flex-col sm:flex-row justify-center items-center gap-4 -mt-10 mb-20 px-4">
-           <motion.button 
-             whileHover={{ scale: 1.05, y: -2 }}
-             whileTap={{ scale: 0.95 }}
-             onClick={onEnterAdmin}
-             className="px-8 py-3 rounded-full border border-indigo-500/30 dark:border-indigo-500/20 bg-white/10 dark:bg-slate-900/50 backdrop-blur-md text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-widest hover:bg-indigo-500/10 transition-all shadow-xl"
-           >
-             Admin Portal
-           </motion.button>
-           <motion.button 
-             whileHover={{ scale: 1.05, y: -2 }}
-             whileTap={{ scale: 0.95 }}
-             onClick={onEnterSuperAdmin}
-             className="px-8 py-3 rounded-full border border-purple-500/30 dark:border-purple-500/20 bg-white/10 dark:bg-slate-900/50 backdrop-blur-md text-purple-600 dark:text-purple-400 text-xs font-bold uppercase tracking-widest hover:bg-purple-500/10 transition-all shadow-xl"
-           >
-             Super Admin Mission Control
-           </motion.button>
-        </div>
-
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -84,7 +58,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
           <Enterprise />
           <Security />
           <Testimonials isLoading={isInitialLoading} />
-          <CTA onStart={onEnterDashboard} />
+          <CTA onStart={onEnterAuth} />
         </motion.div>
       </main>
       <Footer />

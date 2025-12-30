@@ -1,10 +1,17 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, ArrowDownLeft, ArrowUpRight, Zap, CreditCard, Clock, ChevronRight } from 'lucide-react';
 import { Skeleton } from '../Skeleton';
 
-const WalletPage: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
+interface WalletPageProps {
+  isLoading: boolean;
+  onNavigate?: (tab: string) => void;
+}
+
+const WalletPage: React.FC<WalletPageProps> = ({ isLoading, onNavigate }) => {
+  const [isAutoRefill, setIsAutoRefill] = useState(true);
+
   if (isLoading) {
     return (
       <div className="space-y-8 max-w-5xl mx-auto">
@@ -46,11 +53,17 @@ const WalletPage: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="flex-1 py-4 rounded-2xl bg-brand-600 hover:bg-brand-700 font-bold transition-all flex items-center justify-center gap-2 shadow-xl shadow-brand-500/20">
+            <button 
+              onClick={() => onNavigate?.('subscription')}
+              className="flex-1 py-4 rounded-2xl bg-brand-600 hover:bg-brand-700 font-bold transition-all flex items-center justify-center gap-2 shadow-xl shadow-brand-500/20"
+            >
               <Plus size={20} />
               <span>Buy Credits</span>
             </button>
-            <button className="flex-1 py-4 rounded-2xl bg-white/10 hover:bg-white/20 font-bold transition-all border border-white/10">
+            <button 
+              onClick={() => onNavigate?.('settings')}
+              className="flex-1 py-4 rounded-2xl bg-white/10 hover:bg-white/20 font-bold transition-all border border-white/10"
+            >
               Manage Billing
             </button>
           </div>
@@ -70,13 +83,22 @@ const WalletPage: React.FC<{ isLoading: boolean }> = ({ isLoading }) => {
                 </div>
                 <div className="flex items-center justify-between">
                    <span className="text-slate-500">Auto-refill credits</span>
-                   <div className="w-10 h-5 bg-emerald-500 rounded-full relative p-0.5">
-                      <div className="w-4 h-4 bg-white rounded-full absolute right-0.5" />
-                   </div>
+                   <button 
+                    onClick={() => setIsAutoRefill(!isAutoRefill)}
+                    className={`w-10 h-5 rounded-full relative p-0.5 transition-colors ${isAutoRefill ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}
+                   >
+                      <motion.div 
+                        animate={{ x: isAutoRefill ? 20 : 0 }}
+                        className="w-4 h-4 bg-white rounded-full shadow-sm" 
+                      />
+                   </button>
                 </div>
              </div>
            </div>
-           <button className="w-full py-4 mt-8 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white font-bold hover:bg-slate-200 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+           <button 
+            onClick={() => onNavigate?.('subscription')}
+            className="w-full py-4 mt-8 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white font-bold hover:bg-slate-200 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+           >
              <span>View Subscription Plans</span>
              <ChevronRight size={18} />
            </button>

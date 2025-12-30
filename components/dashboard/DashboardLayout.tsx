@@ -15,9 +15,7 @@ import {
   Settings, 
   LogOut, 
   HelpCircle,
-  Search,
   ChevronRight,
-  Menu,
   X,
   Sparkles
 } from 'lucide-react';
@@ -29,6 +27,12 @@ import LiveCall from './LiveCall';
 import HistoryPage from './HistoryPage';
 import AnalyticsPage from './AnalyticsPage';
 import WalletPage from './WalletPage';
+import SubscriptionPage from './SubscriptionPage';
+import SettingsPage from './SettingsPage';
+import SupportPage from './SupportPage';
+import FavoritesPage from './FavoritesPage';
+import TranscriptsPage from './TranscriptsPage';
+import NotificationsPage from './NotificationsPage';
 
 interface DashboardLayoutProps {
   theme: 'light' | 'dark';
@@ -43,7 +47,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
+    const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
   }, [activeTab]);
 
@@ -72,12 +76,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
       case 'call': return <LiveCall onEnd={() => setActiveTab('dashboard')} />;
       case 'history': return <HistoryPage isLoading={isLoading} />;
       case 'analytics': return <AnalyticsPage isLoading={isLoading} />;
-      case 'wallet': return <WalletPage isLoading={isLoading} />;
-      default: return (
-        <div className="flex items-center justify-center h-full text-slate-400">
-          <p>Feature coming soon in Cognitia v2.0</p>
-        </div>
-      );
+      case 'wallet': return <WalletPage isLoading={isLoading} onNavigate={setActiveTab} />;
+      case 'subscription': return <SubscriptionPage isLoading={isLoading} />;
+      case 'settings': return <SettingsPage isLoading={isLoading} />;
+      case 'help': return <SupportPage isLoading={isLoading} />;
+      case 'favorites': return <FavoritesPage isLoading={isLoading} onCall={() => setActiveTab('call')} />;
+      case 'transcripts': return <TranscriptsPage isLoading={isLoading} />;
+      case 'notifications': return <NotificationsPage isLoading={isLoading} />;
+      default: return null;
     }
   };
 
@@ -87,7 +93,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
       <motion.aside 
         initial={false}
         animate={{ width: isSidebarOpen ? 280 : 80 }}
-        className="hidden lg:flex flex-col bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 transition-all duration-300"
+        className="hidden lg:flex flex-col bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 z-[60]"
       >
         <div className="p-6 flex items-center justify-between overflow-hidden">
           <div className="flex items-center space-x-3 shrink-0">
@@ -96,12 +102,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
             </div>
             {isSidebarOpen && <span className="text-xl font-bold font-display whitespace-nowrap">Cognitia</span>}
           </div>
-          <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded">
+          <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-all">
             <ChevronRight size={18} className={`transition-transform duration-300 ${isSidebarOpen ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
-        <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar no-scrollbar">
           {navigation.map((item) => (
             <SidebarItem 
               key={item.id}
@@ -123,7 +129,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
               {...item}
               isOpen={isSidebarOpen}
               isActive={activeTab === item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => {
+                setActiveTab(item.id);
+                setIsLoading(true);
+              }}
             />
           ))}
           <SidebarItem 
@@ -131,7 +140,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
             label="Logout" 
             icon={LogOut} 
             isOpen={isSidebarOpen} 
-            onClick={onExitDashboard}
+            onClick={() => window.location.reload()}
             className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10"
           />
         </div>
@@ -171,13 +180,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] lg:hidden"
             />
             <motion.div 
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              className="fixed inset-y-0 left-0 w-[80%] max-w-sm bg-white dark:bg-slate-950 z-[70] lg:hidden p-6 flex flex-col"
+              className="fixed inset-y-0 left-0 w-[80%] max-w-sm bg-white dark:bg-slate-950 z-[80] lg:hidden p-6 flex flex-col shadow-2xl"
             >
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center space-x-2">
@@ -190,8 +199,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
                   <X size={24} />
                 </button>
               </div>
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 space-y-2 overflow-y-auto no-scrollbar">
                 {navigation.map((item) => (
+                  <SidebarItem 
+                    key={item.id}
+                    {...item}
+                    isOpen={true}
+                    isActive={activeTab === item.id}
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      setMobileMenuOpen(false);
+                      setIsLoading(true);
+                    }}
+                  />
+                ))}
+                <div className="h-px bg-slate-100 dark:bg-slate-800 my-4" />
+                {bottomNav.map((item) => (
                   <SidebarItem 
                     key={item.id}
                     {...item}
@@ -206,7 +229,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ theme, toggleTheme, o
                 ))}
               </div>
               <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
-                 <SidebarItem id="logout" label="Logout" icon={LogOut} isOpen={true} onClick={onExitDashboard} className="text-red-500" />
+                 <SidebarItem id="logout" label="Logout" icon={LogOut} isOpen={true} onClick={() => window.location.reload()} className="text-red-500" />
               </div>
             </motion.div>
           </>
